@@ -23,7 +23,7 @@ To generate the tournament schedule, all the input will be read from a file that
 - **Number of Venues Available**
 - **Rest Period** (in minutes)
 
-The input file will first take the type of round-robin tournament, which can either be single or double, where the latter requires each team to play each other twice. Next, the file will take all the participants that will be a part of the tournament. Each participant will be separated by a new line in the file, and the program will stop reading when it reaches the “-1” terminator. The duration represents the number of days the tournament spans, allowing for matches to be held across many days. The daily start and end times are inputs that represent the time the tournament will start and end each day, using 24-hour time as the input. This is used to ensure that matches are scheduled within a specific time period, as well as compute the total number of hours that the tournament will run each day. The start and end times remain consistent throughout the duration of the tournament. The match length, recorded in minutes, is the maximum time that a match can take, being used to schedule games during the tournament. The **number of venues** indicates the number of available locations for matches to be held during the tournament each day, allowing for multiple matches to occur at the same time. Like the start and end times, the number of available venues remains consistent throughout the duration of the tournament. Finally, the rest period, also in minutes, specifies the minimum rest period for participants between matches, intended to avoid back-to-back games or for travel time between venues.
+The input file will first take the type of round-robin tournament, which can either be single or double, where the latter requires each team to play each other twice. Next, the file will take all the participants that will be a part of the tournament. Each participant will be separated by a new line in the file, and the program will stop reading when it reaches the `-1` terminator. The duration represents the number of days the tournament spans, allowing for matches to be held across many days. The daily start and end times are inputs that represent the time the tournament will start and end each day, using 24-hour time as the input. This is used to ensure that matches are scheduled within a specific time period, as well as compute the total number of hours that the tournament will run each day. The start and end times remain consistent throughout the duration of the tournament. The match length, recorded in minutes, is the maximum time that a match can take, being used to schedule games during the tournament. The **number of venues** indicates the number of available locations for matches to be held during the tournament each day, allowing for multiple matches to occur at the same time. Like the start and end times, the number of available venues remains consistent throughout the duration of the tournament. Finally, the rest period, also in minutes, specifies the minimum rest period for participants between matches, intended to avoid back-to-back games or for travel time between venues.
 
 ### Example Input File for Soccer Round-Robin Tournament (.txt or .dat file):
 
@@ -48,25 +48,34 @@ TEAM E
 
 Based on the participants, the program will get the number of teams represented by `numParticipants`, and use that value to compute the total number of matches that need to be scheduled during the tournament. To determine the number of matches that will occur, the following formula will be used:
 
-Total number of matches = (numParticipants² - numParticipants) / 2
+Total number of matches = `(numParticipants² - numParticipants) / 2`
 
 Each participant in the tournament will play `numParticipants - 1` matches in a single round-robin tournament. In the case of the soccer tournament example, since there are five teams, there will be a total of ten matches, with each team playing four matches. The following matches will need to be scheduled:
 
-TEAM A vs TEAM B
-TEAM A vs TEAM C
-TEAM A vs TEAM D
-TEAM A vs TEAM E
-TEAM B vs TEAM C
-TEAM B vs TEAM D
-TEAM B vs TEAM E
-TEAM C vs TEAM D
-TEAM C vs TEAM E
-TEAM D vs TEAM E
+`TEAM A vs TEAM B`
+
+`TEAM A vs TEAM C`
+
+`TEAM A vs TEAM D`
+
+`TEAM A vs TEAM E`
+
+`TEAM B vs TEAM C`
+
+`TEAM B vs TEAM D`
+
+`TEAM B vs TEAM E`
+
+`TEAM C vs TEAM D`
+
+`TEAM C vs TEAM E`
+
+`TEAM D vs TEAM E`
 
 
-The program must get all the matches that need to be scheduled, then it will take the first match (TEAM A vs TEAM B) and place it in the first available spot (DAY 1, Venue 1, 09:00-10:30). It will then move on to the next match, where it searches for an available spot in DAY 1, Venue 1. Since it is another match played by TEAM A, there has to be at least a 90-minute gap after the first match. The program continues scheduling matches, filling up spots in different venues, but still making sure that the constraints, such as rest periods, are being taken into account. In this specific example, the program is able to schedule the first nine matches without much difficulty. However, when scheduling the final match (TEAM D vs TEAM E), it seems that there is no possible spot for the match to be scheduled while respecting the given constraints, regardless of the day or the venue. The program has to backtrack and reschedule the last successfully scheduled match (TEAM C vs TEAM E) and move to another available time slot. Doing this, the last match is able to be successfully scheduled, creating a valid schedule for the round-robin tournament.
+The program must get all the matches that need to be scheduled, then it will take the first match (`TEAM A vs TEAM B`) and place it in the first available spot (`DAY 1, Venue 1, 09:00-10:30`). It will then move on to the next match, where it searches for an available spot in `DAY 1, Venue 1`. Since it is another match played by `TEAM A`, there has to be at least a 90-minute gap after the first match. The program continues scheduling matches, filling up spots in different venues, but still making sure that the constraints, such as rest periods, are being taken into account. In this specific example, the program is able to schedule the first nine matches without much difficulty. However, when scheduling the final match (`TEAM D vs TEAM E`), it seems that there is no possible spot for the match to be scheduled while respecting the given constraints, regardless of the day or the venue. The program has to backtrack and reschedule the last successfully scheduled match (`TEAM C vs TEAM E`) and move to another available time slot. Doing this, the last match is able to be successfully scheduled, creating a valid schedule for the round-robin tournament.
 
-## Example Output for Soccer Round-Robin Tournament (printed onto console):
+### Example Output for Soccer Round-Robin Tournament (printed onto console):
 
 ```
 DAY 1:
@@ -93,7 +102,7 @@ In the output, notice that:
 - No team plays another game until after a minimum of 90 minutes have passed since their previous match has ended, regardless of venue.
 - No team has multiple matches on the same day at the same time at different venues.
 - Teams can have multiple matches at the same time, but on different days.
-- No matches are scheduled on Day 2 at Venue 2, hence not printed onto the console.
+- No matches are scheduled on `Day 2 at Venue 2`, hence not printed onto the console.
 
 If there is no possible schedule for the given input, then the console will print:
 
