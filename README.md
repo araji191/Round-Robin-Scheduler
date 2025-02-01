@@ -28,14 +28,14 @@ The input file will first take the type of round-robin tournament, which can eit
 ### Example Input File for Soccer Round-Robin Tournament (.txt or .dat file):
 
 ```
-Single			    -- round-robin type
+Single			-- round-robin type
 TEAM A                  -- list of participants
 TEAM B
 TEAM C
 TEAM D
 TEAM E
 -1                      -- finish reading list of teams
-3		           -- number of days
+3		        -- number of days
 9:00                    -- start time
 17:00                   -- end time
 90                      -- match length (in minutes)
