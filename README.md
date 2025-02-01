@@ -71,21 +71,21 @@ The program must get all the matches that need to be scheduled, then it will tak
 ```
 DAY 1:
 Venue 1:
-09:00-10:30: TEAM A vs TEAM B
-12:00-13:30: TEAM A vs TEAM C
-15:00-16:30: TEAM A vs TEAM D
+  09:00-10:30: TEAM A vs TEAM B
+  12:00-13:30: TEAM A vs TEAM C
+  15:00-16:30: TEAM A vs TEAM D
 
 Venue 2:
-09:00-10:30: TEAM C vs TEAM D
-12:00-13:30: TEAM B vs TEAM D
-15:00-16:30: TEAM B vs TEAM E
+  09:00-10:30: TEAM C vs TEAM D
+  12:00-13:30: TEAM B vs TEAM D
+  15:00-16:30: TEAM B vs TEAM E
 
 DAY 2:
 Venue 1:
-09:00-10:30: TEAM A vs TEAM E
-10:30-12:00: TEAM B vs TEAM C
-12:00-13:30: TEAM D vs TEAM E
-15:00-16:30: TEAM C vs TEAM E
+  09:00-10:30: TEAM A vs TEAM E
+  10:30-12:00: TEAM B vs TEAM C
+  12:00-13:30: TEAM D vs TEAM E
+  15:00-16:30: TEAM C vs TEAM E
 ```
 
 In the output, notice that:
