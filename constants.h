@@ -1,4 +1,1 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
-
-#endif
+#define MAX_PARTICIPANTS 100
