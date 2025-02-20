@@ -14,7 +14,7 @@ A soccer league wants to host a single round-robin tournament that features five
 
 To generate the tournament schedule, all the input will be read from a file that contains the following details:
 
-- **Round-robin type** (“Single” or “Double”)
+- **Round-robin type**
 - **Participants**
 - **Duration** (number of days)
 - **Start Time** (24-hour format)
@@ -83,7 +83,6 @@ Venue 1:
   09:00-10:30: TEAM A vs TEAM B
   12:00-13:30: TEAM A vs TEAM C
   15:00-16:30: TEAM A vs TEAM D
-
 Venue 2:
   09:00-10:30: TEAM C vs TEAM D
   12:00-13:30: TEAM B vs TEAM D
