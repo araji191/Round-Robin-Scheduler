@@ -31,20 +31,26 @@ int main() {
     Match matches[TOTAL_MATCHUPS];
 
     int match_index = 0;
-    for (int i = 0; i < num_participants - 1; i++) {
-        for (int j = i + 1; j < num_participants; j++) {
-            matches[match_index].participant1 = tournament.participants[i];
-            matches[match_index].participant2 = tournament.participants[j];
-            match_index++;
+    for (int k = 0; k < num_participants; k++) {
+        for (int i = 0; i < num_participants - 1; i++) {
+            for (int j = i + 1; j < num_participants; j++) {
+                matches[match_index].participant1 = tournament.participants[i];
+                matches[match_index].participant2 = tournament.participants[j];
+                match_index++;
+            }
         }
+
     }
 
     int NUM_VENUES_AND_DAYS = tournament.num_venues * tournament.num_days;
     int NUM_TIMESLOTS = get_interval(tournament.start_time, tournament.end_time) / tournament.match_length;
-    Match schedule[NUM_VENUES_AND_DAYS][NUM_TIMESLOTS];
+   
+    // Match schedule[NUM_VENUES_AND_DAYS][NUM_TIMESLOTS]; 
 
-    //schedule_matches(schedule, NUM_VENUES_AND_DAYS, NUM_TIMESLOTS);
-
+    // Call the schedule_matches function
+    
+    schedule_matches(matches, TOTAL_MATCHUPS, tournament);
+    
     //print_schedule(schedule);
 
     

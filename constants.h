@@ -1,1 +1,2 @@
 #define MAX_PARTICIPANTS 100
+#define MAX_MATCHUPS 100
