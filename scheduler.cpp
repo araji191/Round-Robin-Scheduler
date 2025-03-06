@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 // Recursive backtracking function to schedule the matches
 bool solve(Tournament tournament, Match matches[], int match_index, int NUM_VENUES_AND_DAYS, int NUM_TIMESLOTS) {
     // Base case: If all matches have been scheduled

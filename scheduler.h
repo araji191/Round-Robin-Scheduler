@@ -12,8 +12,4 @@ bool is_valid(int match_index, Match matches[], Tournament tournament, int NUM_V
 
 bool solve(Tournament tournament, Match matches[], int match_index, int NUM_VENUES_AND_DAYS, int NUM_TIMESLOTS);
 
-
-
-
-
 #endif

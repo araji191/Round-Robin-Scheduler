@@ -27,13 +27,17 @@ int main() {
         num_participants++;
     }
 
-    const int TOTAL_MATCHUPS = ((pow(num_participants, 2) - num_participants) / 2 );
-    Match matches[TOTAL_MATCHUPS];
+    int total_matchups = (((pow(num_participants, 2) - num_participants) / 2) * tournament.type);
+    Match matches[MAX_MATCHUPS];
 
+    
     int match_index = 0;
-    for (int k = 0; k < num_participants; k++) {
-        for (int i = 0; i < num_participants - 1; i++) {
-            for (int j = i + 1; j < num_participants; j++) {
+    for (int k = 0; k < tournament.type; k++)
+    {
+        for (int i = 0; i < num_participants; i++)
+        {
+            for (int j = i + 1; j < num_participants; j++)
+            {
                 matches[match_index].participant1 = tournament.participants[i];
                 matches[match_index].participant2 = tournament.participants[j];
                 match_index++;
@@ -51,9 +55,10 @@ int main() {
     
     schedule_matches(matches, TOTAL_MATCHUPS, tournament);
     
-    //print_schedule(schedule);
-
     
+     print_schedule(matches, total_matchups);
 
-    return 0;
+return 0;
+    
 }
+
