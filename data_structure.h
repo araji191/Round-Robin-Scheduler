@@ -13,8 +13,8 @@ struct Time {
 struct Match {
     Time start, end;
     string participant1, participant2;
-    int venue, day;
-    bool scheduled;
+    int venue, days;
+    bool scheduler;
 };
 
 struct Tournament {
