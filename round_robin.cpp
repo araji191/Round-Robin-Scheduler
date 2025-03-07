@@ -40,7 +40,6 @@ int main() {
 
     ifstream input_file;
 
-
     // Open the input file containing tournament configuration    
     input_file.open(get_input_file());
     
@@ -48,7 +47,6 @@ int main() {
         cout << "Error: Could not open input file." << endl;
         return 1;
     }
-
 
     // Read the input data into the tournament structure    
     Tournament tournament;
@@ -65,8 +63,6 @@ int main() {
         cout << "Error: No participants found." << endl;
         return 1;
     }
-
-
 
     // Calculate the total number of matchups based on the number of participants and tournament type    
     int total_matchups = (pow(num_participants, 2) - num_participants) / 2 * tournament.type;
