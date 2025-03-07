@@ -1,7 +1,6 @@
 #include "read_input.h"
 
-void read_input(ifstream &in, Tournament &tournament)
-{
+void read_input(ifstream &in, Tournament &tournament) {
     string participant;
     in >> tournament.type;
     in.ignore();
@@ -20,4 +19,11 @@ void read_input(ifstream &in, Tournament &tournament)
     in >> tournament.match_length;
     in >> tournament.num_venues;
     in >> tournament.rest_period;
+}
+
+string get_input_file() {
+    string input_file;
+    cout << "Enter input file: ";
+    cin >> input_file;
+    return "input_files/" + input_file;
 }
