@@ -1,9 +1,8 @@
-#include <string>
-#include "constants.h"
-
 #ifndef DATA_STRUCTURE_H
 #define DATA_STRUCTURE_H
 
+#include <string>
+#include "constants.h"
 using namespace std;
 
 struct Time {
@@ -28,7 +27,6 @@ struct Tournament {
     int rest_period;
 };
 
-//get total minutes
 int get_interval(Time start, Time end);
 
 #endif
