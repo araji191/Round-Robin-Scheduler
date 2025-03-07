@@ -1,5 +1,6 @@
 /*
- * 
+ * data_structure.h 
+ *
  * This header file defines the core data structures used for representing the tournament and match scheduling system.
  * 
  * The structures in this file model the essential components of the tournament system, such as time, matches, and tournaments.
