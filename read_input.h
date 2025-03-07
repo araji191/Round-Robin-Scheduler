@@ -10,7 +10,6 @@
  * - read_input: Reads the input data from the provided input file and populates the `Tournament` structure with the details such as participants, match length, number of days, and start/end times.
  * - get_input_file: Returns the name of the input file that contains the tournament configuration.
  * 
- * The file includes necessary data structures from `data_structure.h` to access the `Tournament` structure.
  */
 
 #ifndef INPUT_H
