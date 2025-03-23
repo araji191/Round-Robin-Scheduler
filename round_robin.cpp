@@ -36,15 +36,20 @@
 #include "read_input.h"
 #include "print_output.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    if (argc != 2) {
+        cout << "Usage: " << argv[0] << " <input_file>" << endl;
+        return 1;
+    }
+
+    string input_file_path = "input_files/" + string(argv[1]);
 
     ifstream input_file;
-
-    // Open the input file containing tournament configuration    
-    input_file.open(get_input_file());
+    input_file.open(input_file_path);
     
     if (!input_file.is_open()) {
-        cout << "Error: Could not open input file." << endl;
+        cout << "Error: Could not open input file: " << input_file_path << endl;
         return 1;
     }
 

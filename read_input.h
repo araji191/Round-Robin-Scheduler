@@ -22,6 +22,5 @@
 using namespace std;
 
 void read_input(ifstream &in, Tournament &tournament);
-string get_input_file();
 
 #endif
