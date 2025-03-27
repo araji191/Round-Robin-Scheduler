@@ -1,7 +1,14 @@
-/*
-    MAX_PARTICIPANTS: The maximum number of participants (teams) allowed in the tournament.
-    MAX_MATCHUPS: The maximum number of matchups (games) that can be scheduled for the tournament.
- */ 
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
-  #define MAX_PARTICIPANTS 100
-  #define MAX_MATCHUPS 100
+#define MAX_PARTICIPANTS 100
+#define MAX_MATCHUPS 100
+#define MAX_BACKTRACKS 10000
+#define MAX_VENUES 10
+#define MAX_DAYS 30
+#define MAX_TOURNAMENT_TYPE 5
+#define MIN_PARTICIPANTS 2
+#define MAX_MATCH_LENGTH_MINUTES 300
+#define MAX_REST_PERIOD_MINUTES 480
+
+#endif

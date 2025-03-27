@@ -1,6 +1,17 @@
 #include "scheduler.h"
 
+// Global counter for backtracking attempts
+int backtracks = 0;
+
 bool schedule_matches(Match matches[], int total_matchups, Tournament &tournament) {
+    // Validate that input parameters are divisible by 30
+    if (tournament.match_length % 30 != 0 || 
+        tournament.rest_period % 30 != 0 || 
+        get_interval(tournament.start_time, tournament.end_time) % 30 != 0) {
+        cout << "Error: Match length, rest period, and tournament time must be divisible by 30 minutes." << endl;
+        return false;
+    }
+
     // Clear the scheduler status for all matches
     for (int i = 0; i < total_matchups; i++) {
         matches[i].scheduled = false;
@@ -11,6 +22,9 @@ bool schedule_matches(Match matches[], int total_matchups, Tournament &tournamen
         matches[i].end.hour = 0;
         matches[i].end.minute = 0;
     }
+    
+    // Reset backtrack counter
+    backtracks = 0;
     
     //Backtracking
     bool success = solve(matches, 0, total_matchups, tournament);
@@ -25,7 +39,12 @@ bool schedule_matches(Match matches[], int total_matchups, Tournament &tournamen
 }
 
 bool solve(Match matches[], int match_index, int total_matchups, Tournament &tournament) {
-    //If all matches have been scheduled
+    // If we've exceeded maximum backtracks, give up
+    if (backtracks > MAX_BACKTRACKS) {
+        return false;
+    }
+
+    // If all matches have been scheduled
     if (match_index >= total_matchups) {
         return true;
     }
@@ -34,12 +53,11 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
     for (int day = 1; day <= tournament.num_days; day++) {
         // Try all possible venues
         for (int venue = 1; venue <= tournament.num_venues; venue++) {
-            // Calculate available time slots in a day
+            // Calculate available time slots in a day (in 30-minute intervals)
             int day_minutes = get_interval(tournament.start_time, tournament.end_time);
-            int possible_slots = (day_minutes - tournament.match_length + 1);
             
-            // Try each possible starting time
-            for (int start_minute = 0; start_minute <= possible_slots; start_minute += 30) {
+            // Only check every 30 minutes
+            for (int start_minute = 0; start_minute <= day_minutes - tournament.match_length; start_minute += 30) {
                 Time start;
                 int total_start_minutes = (tournament.start_time.hour * 60 + tournament.start_time.minute) + start_minute;
                 start.hour = total_start_minutes / 60;
@@ -49,12 +67,6 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
                 int total_end_minutes = total_start_minutes + tournament.match_length;
                 end.hour = total_end_minutes / 60;
                 end.minute = total_end_minutes % 60;
-                
-                // Check if end time exceeds tournament end time
-                if (end.hour > tournament.end_time.hour || 
-                    (end.hour == tournament.end_time.hour && end.minute > tournament.end_time.minute)) {
-                    continue;  // Skip this slot if it exceeds end time
-                }
                 
                 // Set match details
                 matches[match_index].day = day;
@@ -71,13 +83,15 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
                     
                     // Backtrack if scheduling fails
                     matches[match_index].scheduled = false;
+                    backtracks++;
                 }
             }
         }
     }
     
     // No valid placement found
-    return false;
+ 
+   return false;
 }
 
 bool is_valid(Match matches[], int match_index, Tournament &tournament) {
@@ -121,9 +135,9 @@ bool is_valid(Match matches[], int match_index, Tournament &tournament) {
                 return false;  // Simultaneous matches for the same participant
             }
             
-            // Check rest period
-            if ((other_end + tournament.rest_period > current_start && other_start < current_start) ||
-                (current_end + tournament.rest_period > other_start && current_start < other_start)) {
+            // Check rest period (ensuring rest period is at 30-minute intervals)
+            if (abs(current_start - other_end) < tournament.rest_period ||
+                abs(other_start - current_end) < tournament.rest_period) {
                 return false;  // Rest period violation
             }
         }

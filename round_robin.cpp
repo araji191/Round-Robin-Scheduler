@@ -39,7 +39,10 @@
 int main(int argc, char* argv[]) {
 
     if (argc != 2) {
-        cout << "Usage: " << argv[0] << " <input_file>" << endl;
+        cout << "Please provide an input file as follows:" << endl;
+        cout << endl;
+        cout << "  " << argv[0] << " <input_file>" << endl << endl;
+        cout << "Note: The program will automatically look for the file in the 'input_files' directory." << endl;
         return 1;
     }
 
@@ -55,7 +58,8 @@ int main(int argc, char* argv[]) {
 
     // Read the input data into the tournament structure    
     Tournament tournament;
-    read_input(input_file, tournament);
+    if (!(read_input(input_file, tournament)))
+        return 1;
     input_file.close();
     
     int num_participants = 0;

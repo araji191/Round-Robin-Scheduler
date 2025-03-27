@@ -15,8 +15,9 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include <iostream>
 #include "data_structure.h"
+#include <iostream>
+#include <algorithm>
 using namespace std;
 
 
