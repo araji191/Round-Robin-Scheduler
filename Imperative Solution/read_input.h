@@ -21,6 +21,8 @@
 #include "data_structure.h"
 using namespace std;
 
+int count_tournament_participants(Tournament &tournament);
+void generate_matchups(Tournament &tournament, Match matches[], int num_participants, int &match_index);
 bool read_input(ifstream &in, Tournament &tournament);
 
 #endif

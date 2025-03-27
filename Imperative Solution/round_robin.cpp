@@ -36,29 +36,12 @@
 #include "read_input.h"
 #include "print_output.h"
 
-int count_tournament_participants(Tournament &tournament) {
-    int num_participants = 0;
-    while (num_participants < MAX_PARTICIPANTS && !tournament.participants[num_participants].empty()) {
-        num_participants++;
-    }
-    return num_participants;
-}
-
-void generate_matchups(Tournament &tournament, Match matches[], int num_participants, int &match_index) {
-    for (int k = 0; k < tournament.type; k++) {
-        for (int i = 0; i < num_participants; i++) {
-            for (int j = i + 1; j < num_participants; j++) {
-                matches[match_index].participant1 = tournament.participants[i];
-                matches[match_index].participant2 = tournament.participants[j];
-                match_index++;
-            }
-        }
-    }
-}
-
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        cout << "Usage: " << argv[0] << " <input_file>" << endl;
+        cout << "Please provide an input file as follows:" << endl;
+        cout << endl;
+        cout << "  " << argv[0] << " <input_file>" << endl << endl;
+        cout << "Note: The program will automatically look for the file in the 'testcases' directory." << endl;
         return 1;
     }
 
