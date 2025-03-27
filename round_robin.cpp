@@ -36,55 +36,15 @@
 #include "read_input.h"
 #include "print_output.h"
 
-int main(int argc, char* argv[]) {
-
-    if (argc != 2) {
-        cout << "Please provide an input file as follows:" << endl;
-        cout << endl;
-        cout << "  " << argv[0] << " <input_file>" << endl << endl;
-        cout << "Note: The program will automatically look for the file in the 'input_files' directory." << endl;
-        return 1;
-    }
-
-    string input_file_path = "input_files/" + string(argv[1]);
-
-    ifstream input_file;
-    input_file.open(input_file_path);
-    
-    if (!input_file.is_open()) {
-        cout << "Error: Could not open input file: " << input_file_path << endl;
-        return 1;
-    }
-
-    // Read the input data into the tournament structure    
-    Tournament tournament;
-    if (!(read_input(input_file, tournament)))
-        return 1;
-    input_file.close();
-    
+int count_tournament_participants(Tournament &tournament) {
     int num_participants = 0;
-    // Count the number of participants    
     while (num_participants < MAX_PARTICIPANTS && !tournament.participants[num_participants].empty()) {
         num_participants++;
     }
-    
-    if (num_participants == 0) {
-        cout << "Error: No participants found." << endl;
-        return 1;
-    }
+    return num_participants;
+}
 
-    // Calculate the total number of matchups based on the number of participants and tournament type    
-    int total_matchups = (pow(num_participants, 2) - num_participants) / 2 * tournament.type;
-    if (total_matchups > MAX_MATCHUPS) {
-        cout << "Error: Too many matchups for the current configuration." << endl;
-        return 1;
-    }
-
-    // Initialize match array to store the scheduled matches    
-    Match matches[MAX_MATCHUPS];
-    
-    int match_index = 0;
-    // Generate matchups for the tournament, considering the tournament type (e.g., round-robin)    
+void generate_matchups(Tournament &tournament, Match matches[], int num_participants, int &match_index) {
     for (int k = 0; k < tournament.type; k++) {
         for (int i = 0; i < num_participants; i++) {
             for (int j = i + 1; j < num_participants; j++) {
@@ -94,9 +54,46 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    // Attempt to schedule the generated matchups
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        cout << "Usage: " << argv[0] << " <input_file>" << endl;
+        return 1;
+    }
+
+    string input_file_path = "input_files/" + string(argv[1]);
+    ifstream input_file(input_file_path);
+    
+    if (!input_file.is_open()) {
+        cout << "Error: Could not open input file: " << input_file_path << endl;
+        return 1;
+    }
+
+    Tournament tournament;
+    read_input(input_file, tournament);
+    input_file.close();
+    
+    int num_participants = count_tournament_participants(tournament);
+    
+    if (num_participants == 0) {
+        cout << "Error: No participants found." << endl;
+        return 1;
+    }
+
+    int total_matchups = (pow(num_participants, 2) - num_participants) / 2 * tournament.type;
+    if (total_matchups > MAX_MATCHUPS) {
+        cout << "Error: Too many matchups for the current configuration." << endl;
+        return 1;
+    }
+
+    Match matches[MAX_MATCHUPS];
+    int match_index = 0;
+    
+    generate_matchups(tournament, matches, num_participants, match_index);
+    
     bool success = schedule_matches(matches, total_matchups, tournament);
-    // If scheduling is successful, print the generated schedule    
+    
     if (success) {
         print_schedule(matches, total_matchups);
     }

@@ -1,6 +1,5 @@
 #include "scheduler.h"
 
-// Global counter for backtracking attempts
 int backtracks = 0;
 
 bool schedule_matches(Match matches[], int total_matchups, Tournament &tournament) {
@@ -38,37 +37,39 @@ bool schedule_matches(Match matches[], int total_matchups, Tournament &tournamen
     }
 }
 
+Time calculate_match_start_time(Tournament &tournament, int start_minute) {
+    int total_start_minutes = (tournament.start_time.hour * 60 + tournament.start_time.minute) + start_minute;
+    Time start;
+    start.hour = total_start_minutes / 60;
+    start.minute = total_start_minutes % 60;
+    return start;
+}
+
+Time calculate_match_end_time(Time start, int match_length) {
+    int total_end_minutes = start.hour * 60 + start.minute + match_length;
+    Time end;
+    end.hour = total_end_minutes / 60;
+    end.minute = total_end_minutes % 60;
+    return end;
+}
+
 bool solve(Match matches[], int match_index, int total_matchups, Tournament &tournament) {
-    // If we've exceeded maximum backtracks, give up
     if (backtracks > MAX_BACKTRACKS) {
         return false;
     }
 
-    // If all matches have been scheduled
     if (match_index >= total_matchups) {
         return true;
     }
     
-    // Try all possible days
+    int day_minutes = get_interval(tournament.start_time, tournament.end_time);
+    
     for (int day = 1; day <= tournament.num_days; day++) {
-        // Try all possible venues
         for (int venue = 1; venue <= tournament.num_venues; venue++) {
-            // Calculate available time slots in a day (in 30-minute intervals)
-            int day_minutes = get_interval(tournament.start_time, tournament.end_time);
-            
-            // Only check every 30 minutes
             for (int start_minute = 0; start_minute <= day_minutes - tournament.match_length; start_minute += 30) {
-                Time start;
-                int total_start_minutes = (tournament.start_time.hour * 60 + tournament.start_time.minute) + start_minute;
-                start.hour = total_start_minutes / 60;
-                start.minute = total_start_minutes % 60;
+                Time start = calculate_match_start_time(tournament, start_minute);
+                Time end = calculate_match_end_time(start, tournament.match_length);
                 
-                Time end;
-                int total_end_minutes = total_start_minutes + tournament.match_length;
-                end.hour = total_end_minutes / 60;
-                end.minute = total_end_minutes % 60;
-                
-                // Set match details
                 matches[match_index].day = day;
                 matches[match_index].venue = venue;
                 matches[match_index].start = start;
@@ -81,7 +82,6 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
                         return true;
                     }
                     
-                    // Backtrack if scheduling fails
                     matches[match_index].scheduled = false;
                     backtracks++;
                 }
@@ -89,59 +89,57 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
         }
     }
     
-    // No valid placement found
- 
-   return false;
+    return false;
+}
+
+bool has_venue_time_conflict(const Match &current, const Match &other) {
+    int current_start = current.start.hour * 60 + current.start.minute;
+    int current_end = current.end.hour * 60 + current.end.minute;
+    int other_start = other.start.hour * 60 + other.start.minute;
+    int other_end = other.end.hour * 60 + other.end.minute;
+    
+    return (current_start >= other_start && current_start < other_end) ||
+           (other_start >= current_start && other_start < current_end);
+}
+
+bool has_participant_conflict(const Match &current, const Match &other) {
+    return current.participant1 == other.participant1 ||
+           current.participant1 == other.participant2 ||
+           current.participant2 == other.participant1 ||
+           current.participant2 == other.participant2;
 }
 
 bool is_valid(Match matches[], int match_index, Tournament &tournament) {
     Match &current = matches[match_index];
     
-    // Check all previously scheduled matches
     for (int i = 0; i < match_index; i++) {
         if (!matches[i].scheduled) continue;
         
-        // Check for venue and time conflicts
+        // Venue and time conflict check
         if (current.day == matches[i].day && current.venue == matches[i].venue) {
-            // Convert times to minutes for easier comparison
-            int current_start = current.start.hour * 60 + current.start.minute;
-            int current_end = current.end.hour * 60 + current.end.minute;
-            int other_start = matches[i].start.hour * 60 + matches[i].start.minute;
-            int other_end = matches[i].end.hour * 60 + matches[i].end.minute;
-            
-            // Check for overlap
-            if ((current_start >= other_start && current_start < other_end) ||
-                (other_start >= current_start && other_start < current_end)) {
-                return false;  // Time conflict at the same venue
+            if (has_venue_time_conflict(current, matches[i])) {
+                return false;
             }
         }
         
-        // Check for participant conflicts
-        bool shared_participant = 
-            current.participant1 == matches[i].participant1 ||
-            current.participant1 == matches[i].participant2 ||
-            current.participant2 == matches[i].participant1 ||
-            current.participant2 == matches[i].participant2;
-            
-        if (shared_participant && current.day == matches[i].day) {
-            // Check for rest period violations on the same day
+        // Participant conflict check
+        if (has_participant_conflict(current, matches[i]) && current.day == matches[i].day) {
             int current_start = current.start.hour * 60 + current.start.minute;
             int current_end = current.end.hour * 60 + current.end.minute;
             int other_start = matches[i].start.hour * 60 + matches[i].start.minute;
             int other_end = matches[i].end.hour * 60 + matches[i].end.minute;
             
-            if ((current_start >= other_start && current_start < other_end) ||
-                (other_start >= current_start && other_start < current_end)) {
-                return false;  // Simultaneous matches for the same participant
+            if (has_venue_time_conflict(current, matches[i])) {
+                return false;
             }
             
-            // Check rest period (ensuring rest period is at 30-minute intervals)
+            // Check rest period
             if (abs(current_start - other_end) < tournament.rest_period ||
                 abs(other_start - current_end) < tournament.rest_period) {
-                return false;  // Rest period violation
+                return false;
             }
         }
     }
     
-    return true;  // No conflicts found
+    return true;
 }
