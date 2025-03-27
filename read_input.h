@@ -21,6 +21,6 @@
 #include "data_structure.h"
 using namespace std;
 
-void read_input(ifstream &in, Tournament &tournament);
+bool read_input(ifstream &in, Tournament &tournament);
 
 #endif
