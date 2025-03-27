@@ -4,129 +4,100 @@
 
 using namespace std;
 
-bool read_input(ifstream &in, Tournament &tournament) {
-    // Read tournament type
-    if (!(in >> tournament.type)) {
-        cout << "Error: Failed to read tournament type." << endl;
-        return false;
-    }
+bool validate_tournament_type(Tournament &tournament) {
     if (tournament.type > MAX_TOURNAMENT_TYPE) {
-        cout << "Error: Exceeded maximum number of type (" << MAX_PARTICIPANTS << ")." << endl;
+        cout << "Error: Exceeded maximum tournament type." << endl;
         return false;
     }
-
-   // Read participants
-in.ignore(); // Ignore newline after tournament type
-string participant;
-int participant_count = 0;
-
-while (getline(in, participant)) {
-    if (participant == "END") break;
-
-    if (participant.empty()) {
-        cout << "Error: Empty participant name found." << endl;
-        return false;
-    }
-
-    if (participant_count >= MAX_PARTICIPANTS) {
-        cout << "Error: Exceeded maximum number of participants (" << MAX_PARTICIPANTS << ")." << endl;
-        return false;
-    }
-
-    // Check for duplicate participants (case-sensitive)
-    for (int i = 0; i < participant_count; i++) {
-        if (tournament.participants[i] == participant) {
-            cout << "Error: Duplicate participant found: \"" << participant << "\"" << endl;
-            return false;
-        }
-    }
-
-    tournament.participants[participant_count++] = participant;
+    return true;
 }
 
-    if (participant_count < MIN_PARTICIPANTS) {
-        cout << "Error: At least " << MIN_PARTICIPANTS << " participants are required for a tournament." << endl;
+bool read_participants(ifstream &in, Tournament &tournament) {
+    string participant;
+    int participant_count = 0;
+
+    while (getline(in, participant)) {
+        if (participant == "END") break;
+        if (participant.empty()) {
+            cout << "Error: Empty participant name found." << endl;
+            return false;
+        }
+        if (participant_count >= MAX_PARTICIPANTS) {
+            cout << "Error: Exceeded maximum participants (" << MAX_PARTICIPANTS << ")." << endl;
+            return false;
+        }
+        // Check for duplicates
+        for (int i = 0; i < participant_count; i++) {
+            if (tournament.participants[i] == participant) {
+                cout << "Error: Duplicate participant: \"" << participant << "\"" << endl;
+                return false;
+            }
+        }
+        tournament.participants[participant_count++] = participant;
+    }
+
+    return participant_count >= MIN_PARTICIPANTS;
+}
+
+bool validate_time(Time &time, const string &timeType) {
+    if (time.hour < 0 || time.hour > 23 || time.minute < 0 || time.minute > 59) {
+        cout << "Error: Invalid " << timeType << " time format." << endl;
+        return false;
+    }
+    return true;
+}
+
+bool read_input(ifstream &in, Tournament &tournament) {
+    // Read tournament type
+    if (!(in >> tournament.type) || !validate_tournament_type(tournament)) 
+        return false;
+
+    // Read participants
+    in.ignore();
+    if (!read_participants(in, tournament)) {
+        cout << "Error: At least " << MIN_PARTICIPANTS << " participants required." << endl;
         return false;
     }
 
-    // Read number of days
-    if (!(in >> tournament.num_days)) {
-        cout << "Error: Failed to read number of days." << endl;
-        return false;
-    }
-    if (tournament.num_days <= 0 || tournament.num_days > MAX_DAYS) {
-        cout << "Error: Number of days must be between 1 and " << MAX_DAYS << "." << endl;
+    // Read tournament details
+    if (!(in >> tournament.num_days) || tournament.num_days <= 0 || tournament.num_days > MAX_DAYS) {
+        cout << "Error: Invalid number of days." << endl;
         return false;
     }
 
-    // Read start and end times
+    // Read and validate times
     char colon;
-    Time &start = tournament.start_time;
-    Time &end = tournament.end_time;
+    if (!(in >> tournament.start_time.hour >> colon >> tournament.start_time.minute) || 
+        colon != ':' || !validate_time(tournament.start_time, "start")) 
+        return false;
 
-    if (!(in >> start.hour >> colon >> start.minute)) {
-        cout << "Error: Failed to read start time." << endl;
+    if (!(in >> tournament.end_time.hour >> colon >> tournament.end_time.minute) || 
+        colon != ':' || !validate_time(tournament.end_time, "end")) 
         return false;
-    }
-    if (colon != ':' || start.hour < 0 || start.hour > 23 || start.minute < 0 || start.minute > 59) {
-        cout << "Error: Invalid start time format. Expected HH:MM (24-hour format)." << endl;
-        return false;
-    }
 
-    if (!(in >> end.hour >> colon >> end.minute)) {
-        cout << "Error: Failed to read end time." << endl;
-        return false;
-    }
-    if (colon != ':' || end.hour < 0 || end.hour > 23 || end.minute < 0 || end.minute > 59) {
-        cout << "Error: Invalid end time format. Expected HH:MM (24-hour format)." << endl;
-        return false;
-    }
-
-    // Validate time range
-    if (get_interval(start, end) <= 0) {
+    // Validate time range and match details
+    if (get_interval(tournament.start_time, tournament.end_time) <= 0) {
         cout << "Error: End time must be after start time." << endl;
         return false;
     }
 
-    // Read match length
-    if (!(in >> tournament.match_length)) {
-        cout << "Error: Failed to read match length." << endl;
-        return false;
-    }
-    if (tournament.match_length <= 0 || tournament.match_length > MAX_MATCH_LENGTH_MINUTES) {
-        cout << "Error: Match length must be between 1 and " << MAX_MATCH_LENGTH_MINUTES << " minutes." << endl;
+    if (!(in >> tournament.match_length) || tournament.match_length <= 0 || 
+        tournament.match_length > MAX_MATCH_LENGTH_MINUTES ||
+        tournament.match_length > get_interval(tournament.start_time, tournament.end_time)) {
+        cout << "Error: Invalid match length." << endl;
         return false;
     }
 
-    // Validate match length fits within time window
-    if (tournament.match_length > get_interval(start, end)) {
-        cout << "Error: Match length exceeds available time window." << endl;
+    // Read venues and rest period
+    if (!(in >> tournament.num_venues) || tournament.num_venues <= 0 || tournament.num_venues > MAX_VENUES) {
+        cout << "Error: Invalid number of venues." << endl;
         return false;
     }
 
-    // Read number of venues
-    if (!(in >> tournament.num_venues)) {
-        cout << "Error: Failed to read number of venues." << endl;
+    if (!(in >> tournament.rest_period) || tournament.rest_period < 0 || 
+        tournament.rest_period > MAX_REST_PERIOD_MINUTES) {
+        cout << "Error: Invalid rest period." << endl;
         return false;
-    }
-    if (tournament.num_venues <= 0 || tournament.num_venues > MAX_VENUES) {
-        cout << "Error: Number of venues must be between 1 and " << MAX_VENUES << "." << endl;
-        return false;
-    }
-
-    // Read rest period
-    if (!(in >> tournament.rest_period)) {
-        cout << "Error: Failed to read rest period." << endl;
-        return false;
-    }
-    if (tournament.rest_period < 0 || tournament.rest_period > MAX_REST_PERIOD_MINUTES) {
-        cout << "Error: Rest period must be between 0 and " << MAX_REST_PERIOD_MINUTES << " minutes." << endl;
-        return false;
-    }
-
-    // Check if rest period is at least match length (optional validation)
-    if (tournament.rest_period < tournament.match_length) {
-        cout << "Warning: Rest period is shorter than match length. This may cause scheduling conflicts." << endl;
     }
 
     return true;
