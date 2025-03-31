@@ -1,8 +1,8 @@
-# Round Robin Tournament Scheduler
+ # Round Robin Tournament Scheduler
 
 ## Introduction
 
-The Round Robin Tournament Scheduler is a software tool designed to generate a fair, conflict-free schedule for sports leagues using a round-robin format. It ensures that each participant competes against every other participant a set number of times in a single or double round-robin tournament. The tool efficiently manages logistical constraints such as venue availability, predefined time slots, and rules like mandatory rest periods to create a well-structured and balanced schedule.
+The Round Robin Tournament Scheduler is a software tool designed to generate a fair, conflict-free schedule for sports leagues using a round-robin format. It ensures that each participant competes against every other participant a set number of times in a round-robin tournament. The tool efficiently manages logistical constraints such as venue availability, predefined time slots, and rules like mandatory rest periods to create a well-structured and balanced schedule.
 
 By automating the scheduling process, this tool simplifies league planning, ensuring efficiency, fairness, and optimal venue utilization while dynamically handling complex constraints. It minimizes scheduling conflicts, ensures participants have adequate rest between matches, and organizes matches in a logical, structured manner. Designed as an essential resource for league organizers, the scheduler enhances tournament management by eliminating the challenges of manual scheduling and ensuring a seamless competition flow.
 
@@ -23,26 +23,24 @@ To generate the tournament schedule, all the input will be read from a file that
 - **Number of Venues Available**
 - **Rest Period** (in minutes)
 
-The input file will first take the **type** of round-robin tournament, represented by an integer, to determine how many times participants will play against the same participant. Next, the file will take all the **participants** that will be a part of the tournament. Each participant will be separated by a new line in the file, and the program will stop reading when it reaches the `END` terminator. The **duration** represents the number of days the tournament spans, allowing for matches to be held across many days. The **daily start and end times** are inputs that represent the time the tournament will start and end each day, using 24-hour time as the input. This is used to ensure that matches are scheduled within a specific time period, as well as compute the total number of hours that the tournament will run each day. The start and end times remain consistent throughout the duration of the tournament. The **match length**, recorded in minutes, is the maximum time that a match can take, being used to schedule games during the tournament. The **number of venues** indicates the number of available locations for matches to be held during the tournament each day, allowing for multiple matches to occur at the same time. Like the start and end times, the number of available venues remains consistent throughout the duration of the tournament. Finally, the **rest period**, also in minutes, specifies the minimum rest period for participants between matches, intended to avoid back-to-back games or for travel time between venues.
-
 ### Example Input File for Soccer Round-Robin Tournament (.txt file):
 
 ```
-1     			-- round-robin type (1 indicates single round robin)
+1     			            -- round-robin type (1 indicates single round robin)
 TEAM A                  -- list of participants
 TEAM B
 TEAM C
 TEAM D
 TEAM E
 END                     -- finish reading list of teams
-3		        -- number of days
+3		                    -- number of days
 9:00                    -- start time
 17:00                   -- end time
 90                      -- match length (in minutes)
 2                       -- number of venues available
 90                      -- rest period (in minutes)
 ```
-“--” is used to represent comments in the input file.
+"--" is used to represent comments in the input file.
 
 ## Valid Solution
 
@@ -53,27 +51,17 @@ Total number of matches = `(numParticipants² - numParticipants) / 2`
 Each participant in the tournament will play `numParticipants - 1` matches in a single round-robin tournament. In the case of the soccer tournament example, since there are five teams, there will be a total of ten matches, with each team playing four matches. The following matches will need to be scheduled:
 
 `TEAM A vs TEAM B`
-
 `TEAM A vs TEAM C`
-
 `TEAM A vs TEAM D`
-
 `TEAM A vs TEAM E`
-
 `TEAM B vs TEAM C`
-
 `TEAM B vs TEAM D`
-
 `TEAM B vs TEAM E`
-
 `TEAM C vs TEAM D`
-
 `TEAM C vs TEAM E`
-
 `TEAM D vs TEAM E`
 
-
-The program must get all the matches that need to be scheduled, then it will take the first match (`TEAM A vs TEAM B`) and place it in the first available spot (`DAY 1, Venue 1, 09:00-10:30`). It will then move on to the next match, where it searches for an available spot in `DAY 1, Venue 1`. Since it is another match played by `TEAM A`, there has to be at least a 90-minute gap after the first match. The program continues scheduling matches, filling up spots in different venues, but still making sure that the constraints, such as rest periods, are being taken into account. In this specific example, the program is able to schedule the first nine matches without much difficulty. However, when scheduling the final match (`TEAM D vs TEAM E`), it seems that there is no possible spot for the match to be scheduled while respecting the given constraints, regardless of the day or the venue. The program has to backtrack and reschedule the last successfully scheduled match (`TEAM C vs TEAM E`) and move to another available time slot. Doing this, the last match is able to be successfully scheduled, creating a valid schedule for the round-robin tournament.
+The program must get all the matches that need to be scheduled, then it will take the first match (`TEAM A vs TEAM B`) and place it in the first available spot (`DAY 1, Venue 1, 09:00-10:30`). It will then move on to the next match, where it searches for an available spot in `DAY 1, Venue 1`. Since it is another match played by `TEAM A`, there has to be at least a 90-minute gap after the first match. The program continues scheduling matches, filling up spots in different venues, but still making sure that the constraints, such as rest periods, are being taken into account.
 
 ### Example Output for Soccer Round-Robin Tournament (printed onto console):
 
@@ -112,8 +100,106 @@ If there is no possible schedule for the given input, then the console will prin
 A schedule was not able to be generated based on the input
 ```
 
+## Project Functionality
+
+### Project Structure and Components
+
+#### Core Data Structures (`data_structure.h` and `data_structure.cpp`)
+- `Time` struct: Represents a specific time of day with hour and minute.
+- `Match` struct: Contains details about a single match, including participants, venue, day, start and end times.
+- `Tournament` struct: Holds tournament configuration details like participants, number of days, start/end times, match length, venues, and rest period.
+- `get_interval()` function: Calculates time difference between two `Time` objects in minutes.
+
+#### Input Handling (`read_input.h` and `read_input.cpp`)
+- `read_input()`: Reads tournament configuration from an input file.
+- Validates input parameters such as:
+  - Tournament type
+  - Participant list
+  - Number of days
+  - Daily start and end times
+  - Match length
+  - Number of venues
+  - Rest period between matches
+
+#### Scheduling Algorithm (`scheduler.h` and `scheduler.cpp`)
+- Implements a backtracking algorithm to schedule matches
+- `schedule_matches()`: Initiates the scheduling process
+- `solve()`: Recursively attempts to schedule matches respecting constraints
+- `is_valid()`: Checks if a match can be scheduled without conflicts
+
+#### Output Generation (`print_output.h` and `print_output.cpp`)
+- `print_schedule()`: Prints the generated match schedule to the console
+- Formats output to show matches by day, venue, and time
+
+#### Main Program (`round_robin.cpp`)
+- Handles program execution
+- Reads input file
+- Generates matchups
+- Invokes scheduling and output functions
+
+#### Constants (`constants.h`)
+- Defines maximum limits for:
+  - Participants
+  - Matchups
+  - Venues
+  - Days
+  - Tournament types
+  - Match length
+  - Rest period
+
+### Key Features
+
+1. **Flexible Scheduling**: Supports single and double round-robin tournaments
+2. **Constraint Management**:
+   - Respects minimum rest periods between matches
+   - Prevents venue time conflicts
+   - Ensures no participant plays multiple matches simultaneously
+3. **Dynamic Match Generation**: Automatically creates matchups based on participants
+4. **Detailed Input Validation**: Comprehensive input file validation
+5. **Configurable Parameters**:
+   - Tournament duration
+   - Daily time slots
+   - Match length
+   - Number of venues
+   - Rest periods
+
+### Scheduling Algorithm
+
+The scheduler uses a depth-first search (backtracking) approach to:
+- Explore possible match assignments
+- Prioritize venue and time slot filling
+- Ensure all constraints are met
+- Backtrack when a valid schedule cannot be found
+
 ## Implementation
 
 The programming language to be implemented in is C++ and VS Code as the development environment. A depth-first search approach will be used to explore and assign match schedules efficiently while adhering to constraints. The scheduling process will prioritize filling venues, days, and time slots in a structured order. Matches will first be assigned to the first venue before considering subsequent venues, ensuring optimal space utilization. Similarly, the scheduler will prioritize earlier days before moving to later ones, maintaining a logical match progression. Within each day, earlier time slots will be filled first, minimizing scheduling gaps and reducing the need for adjustments based on rest periods.
 
-The program will represent match schedules using either a 1D or 2D array of structs, allowing efficient storage and manipulation of scheduling data. The scheduling system will be rigorously tested by varying key inputs such as the number of days, venues, participants, match durations, and required rest periods, ensuring robustness under different conditions. To further enhance flexibility, the program will support unconventional times (e.g., 9:57 or 11:13) to test adaptability under non-standard scheduling scenarios.
+## Usage
+
+```bash
+./round_robin <input_file>
+```
+
+Example:
+```bash
+./round_robin input1.txt
+```
+
+## Requirements
+
+- C++ compiler (g++)
+- Make utility
+
+## Compilation
+
+Use the provided Makefile:
+```bash
+make
+```
+
+## Limitations
+
+- The backtracking algorithm may become inefficient for large tournaments
+- Suitable for small to medium-sized tournaments
+- May require optimization for a large number of participants
