@@ -1,9 +1,9 @@
 module Match
 (
-    Match,
+    Match(..),
     newMatch,
-    getStartTime,
-    getEndTime,
+    getMatchStartTime,
+    getMatchEndTime,
     getParticipant1,
     getParticipant2,
     getVenue,
@@ -14,7 +14,6 @@ module Match
 
 import Time
 
--- | Represents a tournament match with timing, participants, venue, and status
 data Match = Match
     { start :: Time
     , end :: Time
@@ -25,16 +24,14 @@ data Match = Match
     , scheduled :: Bool
     } deriving (Show)
 
--- | Creates a new unscheduled Match
-newMatch :: Time -> Time -> String -> String -> Int -> Int -> Match
-newMatch st et p1 p2 v d = Match st et p1 p2 v d False
+newMatch :: Time -> Time -> String -> String -> Int -> Int -> Bool -> Match
+newMatch st et p1 p2 v d sched = Match st et p1 p2 v d sched
 
--- Accessor functions
-getStartTime :: Match -> Time
-getStartTime = start
+getMatchStartTime :: Match -> Time
+getMatchStartTime = start
 
-getEndTime :: Match -> Time
-getEndTime = end
+getMatchEndTime :: Match -> Time
+getMatchEndTime = end
 
 getParticipant1 :: Match -> String
 getParticipant1 = participant1
@@ -51,6 +48,5 @@ getDay = day
 isScheduled :: Match -> Bool
 isScheduled = scheduled
 
--- | Updates the scheduled status of a match
 setScheduled :: Bool -> Match -> Match
 setScheduled s m = m { scheduled = s }
