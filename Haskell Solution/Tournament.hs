@@ -4,6 +4,7 @@ module Tournament
     newTournament,
     getType,
     getParticipants,
+    countParticipants,
     getNumDays,
     getStartTime,
     getEndTime,
@@ -15,7 +16,6 @@ module Tournament
 import Time
 import Constants
 
--- | Represents tournament details and configuration
 data Tournament = Tournament
     { tournamentType :: Int
     , participants :: [String]
@@ -27,12 +27,10 @@ data Tournament = Tournament
     , restPeriod :: Int
     } deriving (Show)
 
--- | Creates a new Tournament with default values
 newTournament :: Int -> [String] -> Int -> Time -> Time -> Int -> Int -> Int -> Tournament
 newTournament t ps nd st et ml nv rp = 
     Tournament t (take maxParticipants ps) nd st et ml nv rp
 
--- Accessor functions
 getType :: Tournament -> Int
 getType = tournamentType
 
@@ -56,3 +54,6 @@ getNumVenues = numVenues
 
 getRestPeriod :: Tournament -> Int
 getRestPeriod = restPeriod
+
+countParticipants :: Tournament -> Int
+countParticipants = length . getParticipants

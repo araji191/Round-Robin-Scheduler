@@ -16,6 +16,9 @@ bool compare_matches(const Match &a, const Match &b) {
 
 void print_schedule(Match matches[], int total_matchups) {
 
+    cout << endl << "Round Robin Tournament Schedule" << endl;
+    cout << "===============================" << endl;
+    
     sort(matches, matches + total_matchups, compare_matches);
 
     int current_day = -1;
