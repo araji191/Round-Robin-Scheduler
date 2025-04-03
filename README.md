@@ -1,4 +1,4 @@
- # Round Robin Tournament Scheduler
+# Round Robin Tournament Scheduler
 
 ## Introduction
 
@@ -100,7 +100,11 @@ If there is no possible schedule for the given input, then the console will prin
 A schedule was not able to be generated based on the input
 ```
 
-## Project Functionality
+## Project Implementations
+
+This project is implemented in both C++ and Haskell, offering two different approaches to solving the tournament scheduling problem.
+
+## C++ Implementation
 
 ### Project Structure and Components
 
@@ -137,17 +141,49 @@ A schedule was not able to be generated based on the input
 - Generates matchups
 - Invokes scheduling and output functions
 
-#### Constants (`constants.h`)
-- Defines maximum limits for:
-  - Participants
-  - Matchups
-  - Venues
-  - Days
-  - Tournament types
-  - Match length
-  - Rest period
+## Haskell Implementation
 
-### Key Features
+### Project Structure and Components
+
+#### Core Data Types and Modules
+
+#### `Time.hs`
+- `Time` data type: Represents time with hour and minute fields
+- Functions for creating time values and calculating intervals between times
+
+#### `Match.hs`
+- `Match` data type: Contains match details including start/end times, participants, venue, day, and scheduling status
+- Functions for retrieving match properties and setting scheduling status
+
+#### `Tournament.hs`
+- `Tournament` data type: Stores tournament configuration including type, participants, days, times, and rules
+- Functions for accessing tournament properties
+
+#### `Constants.hs`
+- Defines maximum limits for tournament parameters
+- Sets constraints for scheduling algorithm
+
+#### `ReadInput.hs`
+- `readInputFile`: Parses tournament data from input files
+- Input validation functions for all tournament parameters
+- Helper functions for parsing formatted text
+
+#### `Scheduler.hs`
+- `scheduleMatches`: Main entry point for scheduling algorithm
+- Backtracking solver implementation using State monad to track progress
+- Functions for checking conflicts between matches
+- Time calculation helpers for match start/end times
+
+#### `PrintOutput.hs`
+- `printSchedule`: Formats and prints match schedule
+- `compareMatches`: Comparison function for sorting matches by day, venue, and time
+
+#### `Main` (in `round_robin.hs`)
+- Program entry point
+- Handles command-line arguments
+- Coordinates input reading, match generation, scheduling, and output
+
+### Key Features of Both Implementations
 
 1. **Flexible Scheduling**: Supports single and double round-robin tournaments
 2. **Constraint Management**:
@@ -165,17 +201,28 @@ A schedule was not able to be generated based on the input
 
 ### Scheduling Algorithm
 
-The scheduler uses a depth-first search (backtracking) approach to:
+Both implementations use a depth-first search (backtracking) approach to:
 - Explore possible match assignments
 - Prioritize venue and time slot filling
 - Ensure all constraints are met
 - Backtrack when a valid schedule cannot be found
 
-## Implementation
-
-The programming language to be implemented in is C++ and VS Code as the development environment. A depth-first search approach will be used to explore and assign match schedules efficiently while adhering to constraints. The scheduling process will prioritize filling venues, days, and time slots in a structured order. Matches will first be assigned to the first venue before considering subsequent venues, ensuring optimal space utilization. Similarly, the scheduler will prioritize earlier days before moving to later ones, maintaining a logical match progression. Within each day, earlier time slots will be filled first, minimizing scheduling gaps and reducing the need for adjustments based on rest periods.
+The Haskell implementation specifically uses the State monad to track the number of backtracks performed.
 
 ## Usage
+
+### C++ Implementation
+
+```bash
+./round_robin <input_file>
+```
+
+Example:
+```bash
+./round_robin input1.txt
+```
+
+### Haskell Implementation (Same as C++)
 
 ```bash
 ./round_robin <input_file>
@@ -188,14 +235,25 @@ Example:
 
 ## Requirements
 
+### For C++ Implementation
 - C++ compiler (g++)
-- Make utility
+- Makefile
+
+### For Haskell Implementation
+- GHC (Glasgow Haskell Compiler)
 
 ## Compilation
 
+### C++ Implementation
 Use the provided Makefile:
 ```bash
 make
+```
+
+### Haskell Implementation
+To compile the Haskell implementation:
+```bash
+ghc round_robin.hs
 ```
 
 ## Limitations
