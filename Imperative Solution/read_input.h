@@ -21,8 +21,11 @@
 #include "data_structure.h"
 using namespace std;
 
+bool validate_tournament_type(Tournament &tournament);
+bool read_participants(ifstream &in, Tournament &tournament);
+bool validate_time(Time &time, const string &timeType);
+bool read_input(ifstream &in, Tournament &tournament);
 int count_tournament_participants(Tournament &tournament);
 void generate_matchups(Tournament &tournament, Match matches[], int num_participants, int &match_index);
-bool read_input(ifstream &in, Tournament &tournament);
 
 #endif

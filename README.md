@@ -51,14 +51,23 @@ Total number of matches = `(numParticipants² - numParticipants) / 2`
 Each participant in the tournament will play `numParticipants - 1` matches in a single round-robin tournament. In the case of the soccer tournament example, since there are five teams, there will be a total of ten matches, with each team playing four matches. The following matches will need to be scheduled:
 
 `TEAM A vs TEAM B`
+
 `TEAM A vs TEAM C`
+
 `TEAM A vs TEAM D`
+
 `TEAM A vs TEAM E`
+
 `TEAM B vs TEAM C`
+
 `TEAM B vs TEAM D`
+
 `TEAM B vs TEAM E`
+
 `TEAM C vs TEAM D`
+
 `TEAM C vs TEAM E`
+
 `TEAM D vs TEAM E`
 
 The program must get all the matches that need to be scheduled, then it will take the first match (`TEAM A vs TEAM B`) and place it in the first available spot (`DAY 1, Venue 1, 09:00-10:30`). It will then move on to the next match, where it searches for an available spot in `DAY 1, Venue 1`. Since it is another match played by `TEAM A`, there has to be at least a 90-minute gap after the first match. The program continues scheduling matches, filling up spots in different venues, but still making sure that the constraints, such as rest periods, are being taken into account.
@@ -112,7 +121,6 @@ This project is implemented in both C++ and Haskell, offering two different appr
 - `Time` struct: Represents a specific time of day with hour and minute.
 - `Match` struct: Contains details about a single match, including participants, venue, day, start and end times.
 - `Tournament` struct: Holds tournament configuration details like participants, number of days, start/end times, match length, venues, and rest period.
-- `get_interval()` function: Calculates time difference between two `Time` objects in minutes.
 
 #### Input Handling (`read_input.h` and `read_input.cpp`)
 - `read_input()`: Reads tournament configuration from an input file.
@@ -145,59 +153,47 @@ This project is implemented in both C++ and Haskell, offering two different appr
 
 ### Project Structure and Components
 
-#### Core Data Types and Modules
+#### Core Data Structures
+- `Time.hs`: Defines time representation and time calculation functions
+- `Match.hs`: Contains match data type and related operations
+- `Tournament.hs`: Stores tournament configuration and parameters
 
-#### `Time.hs`
-- `Time` data type: Represents time with hour and minute fields
-- Functions for creating time values and calculating intervals between times
+#### Input Handling (`ReadInput.hs`)
+- `readInputFile`: Reads and parses tournament configuration from input files
+- Validates all input parameters including:
+  - Tournament type
+  - Participant list
+  - Number of days
+  - Daily start and end times
+  - Match length
+  - Number of venues
+  - Rest period between matches
 
-#### `Match.hs`
-- `Match` data type: Contains match details including start/end times, participants, venue, day, and scheduling status
-- Functions for retrieving match properties and setting scheduling status
+#### Scheduling Algorithm (`Scheduler.hs`)
+- Implements a backtracking algorithm using State monad
+- `scheduleMatches`: Main scheduling function
+- `solve`: Recursive backtracking solver
+- `isValid`: Checks for scheduling conflicts
+- Manages constraints including:
+  - Minimum rest periods
+  - Venue time conflicts
+  - Participant availability
 
-#### `Tournament.hs`
-- `Tournament` data type: Stores tournament configuration including type, participants, days, times, and rules
-- Functions for accessing tournament properties
+#### Output Generation (`PrintOutput.hs`)
+- `printSchedule`: Formats and displays the tournament schedule
+- Generates console output showing matches by:
+  - Day
+  - Venue
+  - Time slot
 
-#### `Constants.hs`
-- Defines maximum limits for tournament parameters
-- Sets constraints for scheduling algorithm
-
-#### `ReadInput.hs`
-- `readInputFile`: Parses tournament data from input files
-- Input validation functions for all tournament parameters
-- Helper functions for parsing formatted text
-
-#### `Scheduler.hs`
-- `scheduleMatches`: Main entry point for scheduling algorithm
-- Backtracking solver implementation using State monad to track progress
-- Functions for checking conflicts between matches
-- Time calculation helpers for match start/end times
-
-#### `PrintOutput.hs`
-- `printSchedule`: Formats and prints match schedule
-- `compareMatches`: Comparison function for sorting matches by day, venue, and time
-
-#### `Main` (in `round_robin.hs`)
+#### Main Program (`RoundRobin.hs`)
 - Program entry point
+- Coordinates all components:
+  - Reads input file
+  - Generates match pairings
+  - Executes scheduling algorithm
+  - Produces final output
 - Handles command-line arguments
-- Coordinates input reading, match generation, scheduling, and output
-
-### Key Features of Both Implementations
-
-1. **Flexible Scheduling**: Supports single and double round-robin tournaments
-2. **Constraint Management**:
-   - Respects minimum rest periods between matches
-   - Prevents venue time conflicts
-   - Ensures no participant plays multiple matches simultaneously
-3. **Dynamic Match Generation**: Automatically creates matchups based on participants
-4. **Detailed Input Validation**: Comprehensive input file validation
-5. **Configurable Parameters**:
-   - Tournament duration
-   - Daily time slots
-   - Match length
-   - Number of venues
-   - Rest periods
 
 ### Scheduling Algorithm
 
@@ -207,7 +203,39 @@ Both implementations use a depth-first search (backtracking) approach to:
 - Ensure all constraints are met
 - Backtrack when a valid schedule cannot be found
 
-The Haskell implementation specifically uses the State monad to track the number of backtracks performed.
+## Error Handling
+
+Both implementations perform comprehensive error checking:
+
+### Input Validation
+- Invalid tournament type
+- Insufficient or excessive participants
+- Duplicate team names
+- Invalid date/time formats
+- End time before start time
+- Match length exceeding available time
+- Invalid venue count
+- Invalid rest period duration
+
+### Scheduling Constraints
+- Impossible time slot assignments
+- Venue double-booking
+- Insufficient rest periods between matches
+- Participant scheduling conflicts
+- Exceeding maximum tournament duration
+
+### System Limitations
+- Maximum participant limit exceeded
+- Maximum match count exceeded
+- File I/O errors
+- Memory allocation issues (C++)
+- Stack overflow (deep recursion cases)
+
+### User Feedback
+- Clear error messages for invalid inputs
+- Notification when scheduling fails
+- Success confirmation when schedule generated
+- Help text for proper usage
 
 ## Usage
 
@@ -240,7 +268,7 @@ Example:
 - Makefile
 
 ### For Haskell Implementation
-- GHC (Glasgow Haskell Compiler)
+- GHC
 
 ## Compilation
 
@@ -253,7 +281,7 @@ make
 ### Haskell Implementation
 To compile the Haskell implementation:
 ```bash
-ghc round_robin.hs
+ghc -o round_robin RoundRobin.hs
 ```
 
 ## Limitations

@@ -34,5 +34,6 @@ using namespace std;
  */
 
 void print_schedule(Match matches[], int total_matchups);
+bool compare_matches(const Match &a, const Match &b);
 
 #endif

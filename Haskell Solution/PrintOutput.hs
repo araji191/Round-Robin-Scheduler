@@ -32,22 +32,22 @@ printSchedule matches = do
     -- Print all matches for a day
     printDay :: [Match] -> IO ()
     printDay dayMatches = do
-        putStrLn $ "\nDAY " ++ show (day (head dayMatches)) ++ ":"
+        putStrLn ("\nDAY " ++ show (day (head dayMatches)) ++ ":")
         let groupedByVenue = groupBy ((==) `on` venue) dayMatches
         mapM_ printVenue groupedByVenue
     
     -- Print all matches for a venue
     printVenue :: [Match] -> IO ()
     printVenue venueMatches = do
-        putStrLn $ "Venue " ++ show (venue (head venueMatches)) ++ ":"
+        putStrLn ("Venue " ++ show (venue (head venueMatches)) ++ ":")
         mapM_ printMatch venueMatches
     
     printMatch :: Match -> IO ()
-    printMatch m = do
-        let startH = getHour (start m)
-            startM = getMinute (start m)
-            endH = getHour (end m)
-            endM = getMinute (end m)
-        putStrLn $ " " ++ formatTime startH ++ ":" ++ formatTime startM ++ "-" ++
+    printMatch match = do
+        let startH = getHour (start match)
+            startM = getMinute (start match)
+            endH = getHour (end match)
+            endM = getMinute (end match)
+        putStrLn (" " ++ formatTime startH ++ ":" ++ formatTime startM ++ "-" ++
                 formatTime endH ++ ":" ++ formatTime endM ++ ": " ++
-                participant1 m ++ " vs " ++ participant2 m
+                participant1 match ++ " vs " ++ participant2 match)
