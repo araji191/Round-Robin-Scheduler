@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    string input_file_path = "testcases/" + string(argv[1]);
+    string input_file_path = "../testcases/" + string(argv[1]);
     ifstream input_file(input_file_path);
     
     if (!input_file.is_open()) {

@@ -68,5 +68,9 @@ bool solve(Match matches[], int match_index, int total_matchups, Tournament &tou
  */
 
 bool is_valid(Match matches[], int match_index, Tournament &tournament);
+Time calculate_match_start_time(Tournament &tournament, int start_minute);
+Time calculate_match_end_time(Time start, int match_length);
+bool has_venue_time_conflict(const Match &current, const Match &other);
+bool has_participant_conflict(const Match &current, const Match &other);
 
 #endif

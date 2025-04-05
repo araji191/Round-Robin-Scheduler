@@ -14,8 +14,6 @@ import Tournament
 import Time
 import Constants
 
-import Data.List (find)
-import Data.Maybe (isJust)
 import Control.Monad.State
 
 -- Track backtrack count
@@ -37,7 +35,7 @@ scheduleMatches matches tournament = do
             let (result, backtracks) = runState (solve initializedMatches 0 tournament) 0
             case result of
                 Just solution -> do
-                    putStrLn $ "Schedule created successfully!"
+                    putStrLn ("Schedule created successfully!")
                     return (Just solution)
                 Nothing -> do
                     putStrLn "A schedule was not able to be generated based on the input"
@@ -48,47 +46,47 @@ scheduleMatches matches tournament = do
         getRestPeriod t `mod` 30 == 0 &&
         getInterval (getStartTime t) (getEndTime t) `mod` 30 == 0
 
-    unschedule m = m { venue = 0, day = 0, start = newTime 0 0, end = newTime 0 0, scheduled = False }
+    unschedule match = match { venue = 0, day = 0, start = newTime 0 0, end = newTime 0 0, scheduled = False }
 
 -- | Backtracking solver for scheduling matches
 solve :: [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
-solve matches currentIdx tournament = do
+solve matches currentIndex tournament = do
     backtracks <- get
     if backtracks > maxBacktracks 
         then return Nothing
-        else if currentIdx >= length matches 
-            then return $ Just matches
-            else tryOptions matches currentIdx tournament
+        else if currentIndex >= length matches 
+            then return (Just matches)
+            else tryOptions matches currentIndex tournament
 
 tryOptions :: [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
-tryOptions matches currentIdx tournament = do
+tryOptions matches currentIndex tournament = do
     let dayMinutes = getInterval (getStartTime tournament) (getEndTime tournament)
-        currentMatch = matches !! currentIdx
+        currentMatch = matches !! currentIndex
         days = [1 .. getNumDays tournament]
         venues = [1 .. getNumVenues tournament]
         timeSlots = [0, 30 .. dayMinutes - getMatchLength tournament]
     
-    tryAllDays days venues timeSlots currentMatch matches currentIdx tournament
+    tryAllDays days venues timeSlots currentMatch matches currentIndex tournament
 
 tryAllDays :: [Int] -> [Int] -> [Int] -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllDays [] _ _ _ _ _ _ = return Nothing
-tryAllDays (day:days) venues timeSlots currentMatch matches currentIdx tournament = do
-    result <- tryAllVenues venues day timeSlots currentMatch matches currentIdx tournament
+tryAllDays (day:days) venues timeSlots currentMatch matches currentIndex tournament = do
+    result <- tryAllVenues venues day timeSlots currentMatch matches currentIndex tournament
     case result of
-        Just solution -> return $ Just solution
-        Nothing -> tryAllDays days venues timeSlots currentMatch matches currentIdx tournament
+        Just solution -> return (Just solution)
+        Nothing -> tryAllDays days venues timeSlots currentMatch matches currentIndex tournament
 
 tryAllVenues :: [Int] -> Int -> [Int] -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllVenues [] _ _ _ _ _ _ = return Nothing
-tryAllVenues (venue:venues) day timeSlots currentMatch matches currentIdx tournament = do
-    result <- tryAllTimeSlots timeSlots day venue currentMatch matches currentIdx tournament
+tryAllVenues (venue:venues) day timeSlots currentMatch matches currentIndex tournament = do
+    result <- tryAllTimeSlots timeSlots day venue currentMatch matches currentIndex tournament
     case result of
-        Just solution -> return $ Just solution
-        Nothing -> tryAllVenues venues day timeSlots currentMatch matches currentIdx tournament
+        Just solution -> return (Just solution)
+        Nothing -> tryAllVenues venues day timeSlots currentMatch matches currentIndex tournament
 
 tryAllTimeSlots :: [Int] -> Int -> Int -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllTimeSlots [] _ _ _ _ _ _ = return Nothing
-tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIdx tournament = do
+tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIndex tournament = do
     let start = calculateMatchStartTime tournament startMinute
         end = calculateMatchEndTime start (getMatchLength tournament)
         updatedMatch = currentMatch {
@@ -98,19 +96,19 @@ tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIdx to
             end = end,
             scheduled = True
         }
-        updatedMatches = take currentIdx matches ++ [updatedMatch] ++ drop (currentIdx + 1) matches
+        updatedMatches = take currentIndex matches ++ [updatedMatch] ++ drop (currentIndex + 1) matches
     
-    if isValid updatedMatches currentIdx tournament
+    if isValid updatedMatches currentIndex tournament
         then do
-            result <- solve updatedMatches (currentIdx + 1) tournament
+            result <- solve updatedMatches (currentIndex + 1) tournament
             case result of
-                Just solution -> return $ Just solution
+                Just solution -> return (Just solution)
                 Nothing -> do
                     modify (+1) -- Increment backtrack count
-                    tryAllTimeSlots slots day venue currentMatch matches currentIdx tournament
+                    tryAllTimeSlots slots day venue currentMatch matches currentIndex tournament
         else do
             modify (+1) -- Increment backtrack count
-            tryAllTimeSlots slots day venue currentMatch matches currentIdx tournament
+            tryAllTimeSlots slots day venue currentMatch matches currentIndex tournament
 
 -- | Calculate the start time based on tournament start time and minutes offset
 calculateMatchStartTime :: Tournament -> Int -> Time
@@ -144,9 +142,9 @@ hasParticipantConflict current other =
 
 -- | Validate if the current match can be scheduled without conflicts
 isValid :: [Match] -> Int -> Tournament -> Bool
-isValid matches currentIdx tournament =
-    let current = matches !! currentIdx
-        previousMatches = filter scheduled (take currentIdx matches)
+isValid matches currentIndex tournament =
+    let current = matches !! currentIndex
+        previousMatches = filter scheduled (take currentIndex matches)
     in all (checkConflicts current tournament) previousMatches
   where
     checkConflicts current tournament other =
