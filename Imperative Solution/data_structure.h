@@ -1,21 +1,20 @@
 /*
- * data_structure.h 
- *
- * This header file defines the core data structures used for representing the tournament and match scheduling system.
+ * File name: data_structure.h
  * 
- * The structures in this file model the essential components of the tournament system, such as time, matches, and tournaments.
- * This file also contains the declaration of the `get_interval` function, which is used to calculate the time difference between two `Time` objects.
+ * Authors: Abiola Raji, Ochihai Omuha
+ * 
+ * This header file defines the core data structures and functions used for representing
+ * the tournament scheduling system. It provides the fundamental building blocks for
+ * time management, match representation, and tournament configuration.
  * 
  * Structures:
- * - Time: Represents a time of day using hours and minutes.
- * - Match: Represents a match in the tournament, including start and end times, participants, venue, and day of the match, along with the scheduling status.
- * - Tournament: Contains tournament details such as type, list of participants, number of days, start/end times, match length, number of venues, and rest period.
+ * - Time: Represents a specific time of day with hour and minute components
+ * - Match: Contains all details about a tournament match including participants, timing, and venue
+ * - Tournament: Holds the complete configuration of a tournament including participants list and constraints
  * 
  * Functions:
- * - get_interval: Calculates the interval (in minutes) between two `Time` objects, which helps determine match durations and scheduling.
- * 
+ * - get_interval: Calculates the time difference between two Time objects in minutes
  */
-
 
 #ifndef DATA_STRUCTURE_H
 #define DATA_STRUCTURE_H
@@ -24,38 +23,55 @@
 #include "constants.h"
 using namespace std;
 
-
-/*
- * Represents a specific time of day (hours and minutes).
+/**
+ * @brief Represents a specific time of day in 24-hour format
+ * 
+ * Attributes:
+ * - hour: Integer representing the hour (0-23)
+ *          - 0 = midnight, 12 = noon, 23 = 11 PM
+ * - minute: Integer representing minutes (0-59)
+ *          - Must be a valid minute value
  */
-
 struct Time {
-    int hour, minute;
+    int hour;
+    int minute;
 };
 
-/*
- * Represents a match in the tournament.
+/**
+ * @brief Represents a single match in the tournament schedule
  * 
- * This structure holds details about the match, including the start and end times,
- * the participants (teams), the venue, the day it occurs, and whether the match
- * has been scheduled.
+ * Attributes:
+ * - start: Time object representing when the match begins
+ * - end: Time object representing when the match concludes
+ * - participant1: String containing name of first team/player
+ * - participant2: String containing name of second team/player
+ * - venue: Integer identifier for the match location (1-based index)
+ * - day: Integer representing which tournament day the match occurs on (1-based index)
+ * - scheduled: Boolean flag indicating if this match has been successfully placed in schedule
  */
-
 struct Match {
-    Time start, end;
-    string participant1, participant2;
-    int venue, day;
+    Time start;
+    Time end;
+    string participant1;
+    string participant2;
+    int venue;
+    int day;
     bool scheduled;
 };
 
-/*
- * Represents the tournament details.
+/**
+ * @brief Contains all configuration parameters for a tournament
  * 
- * This structure holds information about the type of tournament, the participants,
- * the number of days, the start and end times, the match length, the number of venues,
- * and the rest period between matches.
+ * Attributes:
+ * - type: Integer indicating tournament type (1 = single round-robin, etc.)
+ * - participants: Array of strings containing all participant names
+ * - num_days: Integer count of days the tournament will run
+ * - start_time: Time object for daily match start (earliest possible match time)
+ * - end_time: Time object for daily match end (latest possible match time)
+ * - match_length: Integer duration of matches in minutes
+ * - num_venues: Integer count of available venues
+ * - rest_period: Integer minimum minutes required between matches for participants
  */
-
 struct Tournament {
     int type;
     string participants[MAX_PARTICIPANTS];
@@ -67,18 +83,16 @@ struct Tournament {
     int rest_period;
 };
 
-/*
- * Calculates the interval (in minutes) between two Time objects.
+/**
+ * @brief Calculates time difference between two Time objects
+ * @param start The starting time
+ * @param end The ending time
+ * @return Time difference in minutes
  * 
- * This function takes two `Time` objects and calculates the difference in minutes
- * between them, which is useful for calculating match durations and time differences.
- * 
- * start - The start time.
- * end - The end time.
- * return - The time difference in minutes.
+ * Calculates the duration between two Time points by converting both to
+ * total minutes since midnight and returning the difference.
+ * Returns negative value if end time is before start time.
  */
-
-
 int get_interval(Time start, Time end);
 
 #endif
