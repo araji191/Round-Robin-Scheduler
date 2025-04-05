@@ -1,17 +1,17 @@
-
 /*
- * scheduler.h
+ * File name: scheduler.h
  * 
- * This header file declares the functions for scheduling matches in the tournament.
+ * Authors: Abiola Raji, Ochihai Omuha
  * 
- * The functions in this file are responsible for the core match scheduling logic of the tournament.
- * They implement a backtracking algorithm to recursively assign matches to available time slots and venues
- * while ensuring that all constraints (e.g., rest period, venue conflicts) are respected.
+ * This header file declares functions for the tournament scheduling algorithm.
+ * The functions implement a backtracking solution to assign matches to time slots
+ * while respecting all constraints.
  * 
  * Functions:
- * - schedule_matches: Initiates the scheduling process by calling the backtracking function to schedule all matches.
- * - solve: A recursive backtracking function that attempts to schedule each match and backtracks when necessary.
- * - is_valid: Checks if the current match can be scheduled without violating constraints (rest period, venue conflicts).
+ * - schedule_matches: Main scheduling interface
+ * - solve: Recursive backtracking implementation
+ * - is_valid: Constraint validation checker
+ * - Helper functions for time calculations and conflict detection
  */
 
 #ifndef SCHEDULER_H
@@ -21,56 +21,64 @@
 #include "data_structure.h"
 using namespace std;
 
-/*
- * Initiates the scheduling process for the tournament.
- * 
- * This function starts the match scheduling by calling the `solve` function, which uses 
- * recursive backtracking to assign matches to time slots and venues while ensuring that all 
- * constraints are satisfied.
- * 
- * matches - An array of `Match` objects representing the matches to be scheduled.
- * total_matchups - The total number of matches to schedule.
- * tournament - A reference to the `Tournament` object containing tournament configuration and parameters.
- * 
- * return `true` if the matches are successfully scheduled, `false` otherwise.
+/**
+ * @brief Main scheduling interface function
+ * @param matches Array of matches to schedule
+ * @param total_matchups Total number of matches
+ * @param tournament Tournament configuration
+ * @return True if schedule was successfully created
  */
-
 bool schedule_matches(Match matches[], int total_matchups, Tournament &tournament);
 
-/*
- * Recursively schedules matches using backtracking.
- * 
- * This function attempts to schedule a match by trying different available time slots and venues. 
- * If scheduling the current match succeeds, it recursively attempts to schedule the next match.
- * If a valid schedule cannot be found, the function backtracks by undoing the last match's scheduling.
- * 
- * matches - An array of `Match` objects representing the matches to be scheduled.
- * match_index - The index of the match currently being scheduled.
- * total_matchups - The total number of matches to schedule.
- * tournament - A reference to the `Tournament` object containing tournament configuration and parameters.
- * 
- * return `true` if the current match and subsequent matches can be successfully scheduled, `false` otherwise.
+/**
+ * @brief Recursive backtracking scheduler
+ * @param matches Array of matches to schedule
+ * @param match_index Current match being scheduled
+ * @param total_matchups Total number of matches
+ * @param tournament Tournament configuration
+ * @return True if remaining matches can be scheduled
  */
-
 bool solve(Match matches[], int match_index, int total_matchups, Tournament &tournament);
 
-/*
- * Checks if a match can be scheduled without violating constraints.
- * 
- * This function verifies that a match does not violate constraints such as the rest period between 
- * matches for each team and conflicts with other scheduled matches at the same venue.
- * 
- * matches - An array of `Match` objects representing the matches to be scheduled.
- * match_index - The index of the match currently being scheduled.
- * tournament - A reference to the `Tournament` object containing tournament configuration and parameters.
- * 
- * return `true` if the match can be scheduled, `false` if it violates any constraints.
+/**
+ * @brief Validates match scheduling constraints
+ * @param matches Array of matches
+ * @param match_index Match to validate
+ * @param tournament Tournament configuration
+ * @return True if match can be scheduled at current position
  */
-
 bool is_valid(Match matches[], int match_index, Tournament &tournament);
+
+/**
+ * @brief Calculates match start time from minutes offset
+ * @param tournament Tournament configuration
+ * @param start_minute Minutes from daily start time
+ * @return Calculated Time object
+ */
 Time calculate_match_start_time(Tournament &tournament, int start_minute);
+
+/**
+ * @brief Calculates match end time from start time
+ * @param start Match start time
+ * @param match_length Duration in minutes
+ * @return Calculated end Time
+ */
 Time calculate_match_end_time(Time start, int match_length);
+
+/**
+ * @brief Checks for venue time conflicts between matches
+ * @param current Match being scheduled
+ * @param other Already scheduled match
+ * @return True if conflicts exist
+ */
 bool has_venue_time_conflict(const Match &current, const Match &other);
+
+/**
+ * @brief Checks for participant conflicts between matches
+ * @param current Match being scheduled
+ * @param other Already scheduled match
+ * @return True if same participants are involved
+ */
 bool has_participant_conflict(const Match &current, const Match &other);
 
 #endif

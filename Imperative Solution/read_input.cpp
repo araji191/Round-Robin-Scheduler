@@ -1,3 +1,20 @@
+/*
+ * File name: read_input.cpp
+ * 
+ * Authors: Abiola Raji, Ochihai Omuha
+ * 
+ * Implementation file for reading and validating tournament input data.
+ * Contains functions for parsing input files and initializing tournament structures.
+ * 
+ * Functions:
+ * - validate_tournament_type: Checks tournament type validity
+ * - read_participants: Reads and validates participant list
+ * - validate_time: Validates time format (HH:MM)
+ * - read_input: Main function for reading tournament configuration
+ * - count_tournament_participants: Returns number of participants
+ * - generate_matchups: Creates all required match pairings
+ */
+
 #include "read_input.h"
 #include "constants.h"
 #include <iostream>

@@ -1,3 +1,12 @@
+/*
+ * File name: print_output.cpp
+ * 
+ * Authors: Abiola Raji, Ochihai Omuha
+ * 
+ * Implementation file for tournament schedule output functions.
+ * Contains the logic for formatting and displaying the match schedule.
+ */
+
 #include "print_output.h"
 
 bool compare_matches(const Match &a, const Match &b) {
