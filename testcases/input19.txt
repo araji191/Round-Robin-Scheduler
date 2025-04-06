@@ -1,0 +1,11 @@
+1
+TEAM A
+TEAM B
+TEAM C
+END
+1
+09:00
+12:00
+sixty
+1
+30
