@@ -38,4 +38,4 @@ maxRestPeriod :: Int
 maxRestPeriod = 480
 
 maxBacktracks :: Int
-maxBacktracks = 10000
+maxBacktracks = 100000

@@ -63,6 +63,8 @@ int main(int argc, char* argv[]) {
     
     if (success) {
         print_schedule(matches, total_matchups);
+    } else {
+        cout << "Failed to generate schedule" << endl;
     }
     
     return 0;
