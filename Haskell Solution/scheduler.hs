@@ -1,3 +1,28 @@
+-- File: scheduler.hs
+
+{- |
+Module      :  Scheduler
+Description :  
+    This module implements a backtracking algorithm to schedule matches for a tournament.
+    It checks for conflicts in venue and participant availability, ensuring that matches are scheduled
+    without overlapping times or participant conflicts.
+
+    The algorithm uses a depth-first search approach to explore all possible combinations of days,
+    venues, and time slots for each match. If a conflict is detected, it backtracks and tries the next option.
+
+    The module also includes functions to calculate the start and end times of matches based on the tournament's
+    start time and match length.
+    The main function is `scheduleMatches`, which takes a list of matches and a tournament object,
+    and returns a list of scheduled matches or an error message if scheduling fails.
+    The module also includes helper functions to check for conflicts between matches based on venue and participants.
+    The algorithm is designed to be efficient and can handle a large number of matches and venues.
+    The module is part of a larger tournament scheduling system and is intended to be used in conjunction
+    with other modules that define the tournament structure and match data. 
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
 module Scheduler
 (
     scheduleMatches,
@@ -22,7 +47,7 @@ import Control.Monad.State
 type SchedulerState = Int
 type Scheduler a = State SchedulerState a
 
--- | Schedule all matches for a tournament
+-- Schedule all matches for a tournament
 scheduleMatches :: [Match] -> Tournament -> IO (Maybe [Match])
 scheduleMatches matches tournament = do
     -- Validate time parameters are divisible by 30
@@ -50,7 +75,7 @@ scheduleMatches matches tournament = do
 
     unschedule m = m { venue = 0, day = 0, start = newTime 0 0, end = newTime 0 0, scheduled = False }
 
--- | Backtracking solver for scheduling matches
+--  Backtracking solver for scheduling matches
 solve :: [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 solve matches currentIdx tournament = do
     backtracks <- get
@@ -60,6 +85,7 @@ solve matches currentIdx tournament = do
             then return $ Just matches
             else tryOptions matches currentIdx tournament
 
+--  Try to schedule matches by iterating through all possible days, venues, and time slots
 tryOptions :: [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryOptions matches currentIdx tournament = do
     let dayMinutes = getInterval (getStartTime tournament) (getEndTime tournament)
@@ -70,6 +96,7 @@ tryOptions matches currentIdx tournament = do
     
     tryAllDays days venues timeSlots currentMatch matches currentIdx tournament
 
+--  Try all combinations of days, venues, and time slots for the current match
 tryAllDays :: [Int] -> [Int] -> [Int] -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllDays [] _ _ _ _ _ _ = return Nothing
 tryAllDays (day:days) venues timeSlots currentMatch matches currentIdx tournament = do
@@ -78,6 +105,7 @@ tryAllDays (day:days) venues timeSlots currentMatch matches currentIdx tournamen
         Just solution -> return $ Just solution
         Nothing -> tryAllDays days venues timeSlots currentMatch matches currentIdx tournament
 
+--  Try all combinations of venues and time slots for the current match
 tryAllVenues :: [Int] -> Int -> [Int] -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllVenues [] _ _ _ _ _ _ = return Nothing
 tryAllVenues (venue:venues) day timeSlots currentMatch matches currentIdx tournament = do
@@ -86,6 +114,7 @@ tryAllVenues (venue:venues) day timeSlots currentMatch matches currentIdx tourna
         Just solution -> return $ Just solution
         Nothing -> tryAllVenues venues day timeSlots currentMatch matches currentIdx tournament
 
+--  Try all time slots for the current match
 tryAllTimeSlots :: [Int] -> Int -> Int -> Match -> [Match] -> Int -> Tournament -> Scheduler (Maybe [Match])
 tryAllTimeSlots [] _ _ _ _ _ _ = return Nothing
 tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIdx tournament = do
@@ -100,6 +129,7 @@ tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIdx to
         }
         updatedMatches = take currentIdx matches ++ [updatedMatch] ++ drop (currentIdx + 1) matches
     
+    -- Check if the current match can be scheduled without conflicts
     if isValid updatedMatches currentIdx tournament
         then do
             result <- solve updatedMatches (currentIdx + 1) tournament
@@ -112,19 +142,19 @@ tryAllTimeSlots (startMinute:slots) day venue currentMatch matches currentIdx to
             modify (+1) -- Increment backtrack count
             tryAllTimeSlots slots day venue currentMatch matches currentIdx tournament
 
--- | Calculate the start time based on tournament start time and minutes offset
+--  Calculate the start time based on tournament start time and minutes offset
 calculateMatchStartTime :: Tournament -> Int -> Time
 calculateMatchStartTime tournament startMinute =
     let totalMinutes = getHour (getStartTime tournament) * 60 + getMinute (getStartTime tournament) + startMinute
     in newTime (totalMinutes `div` 60) (totalMinutes `mod` 60)
 
--- | Calculate the end time based on start time and match length
+-- Calculate the end time based on start time and match length
 calculateMatchEndTime :: Time -> Int -> Time
 calculateMatchEndTime start len =
     let totalMinutes = getHour start * 60 + getMinute start + len
     in newTime (totalMinutes `div` 60) (totalMinutes `mod` 60)
 
--- | Check if a venue has a time conflict between two matches
+--  Check if a venue has a time conflict between two matches
 hasVenueTimeConflict :: Match -> Match -> Bool
 hasVenueTimeConflict current other =
     let currentStart = getHour (start current) * 60 + getMinute (start current)
@@ -134,7 +164,7 @@ hasVenueTimeConflict current other =
     in (currentStart >= otherStart && currentStart < otherEnd) ||
        (otherStart >= currentStart && otherStart < currentEnd)
 
--- | Check if two matches share any participants
+--  Check if two matches share any participants
 hasParticipantConflict :: Match -> Match -> Bool
 hasParticipantConflict current other =
     participant1 current == participant1 other ||
@@ -142,7 +172,7 @@ hasParticipantConflict current other =
     participant2 current == participant1 other ||
     participant2 current == participant2 other
 
--- | Validate if the current match can be scheduled without conflicts
+--  Validate if the current match can be scheduled without conflicts
 isValid :: [Match] -> Int -> Tournament -> Bool
 isValid matches currentIdx tournament =
     let current = matches !! currentIdx
@@ -162,6 +192,7 @@ isValid matches currentIdx tournament =
                 else True
         in venueConflict && participantConflict  -- Both must be true
     
+    -- Check if the current match has a rest period from the other match
     checkRestPeriod current other tournament =
         let currentStart = getHour (start current) * 60 + getMinute (start current)
             currentEnd = getHour (end current) * 60 + getMinute (end current)

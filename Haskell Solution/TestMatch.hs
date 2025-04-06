@@ -1,7 +1,6 @@
 import Time 
 import Match
 
-
 -- Test driver for the Match module
 runMatchTests :: IO ()
 runMatchTests = do
