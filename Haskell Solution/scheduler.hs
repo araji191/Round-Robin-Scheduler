@@ -1,3 +1,28 @@
+-- File: Scheduler.hs
+
+{- |
+Module      :  Scheduler
+Description :  
+    This module implements a backtracking algorithm to schedule matches for a tournament.
+    It checks for conflicts in venue and participant availability, ensuring that matches are scheduled
+    without overlapping times or participant conflicts.
+
+    The algorithm uses a depth-first search approach to explore all possible combinations of days,
+    venues, and time slots for each match. If a conflict is detected, it backtracks and tries the next option.
+
+    The module also includes functions to calculate the start and end times of matches based on the tournament's
+    start time and match length.
+    The main function is `scheduleMatches`, which takes a list of matches and a tournament object,
+    and returns a list of scheduled matches or an error message if scheduling fails.
+    The module also includes helper functions to check for conflicts between matches based on venue and participants.
+    The algorithm is designed to be efficient and can handle a large number of matches and venues.
+    The module is part of a larger tournament scheduling system and is intended to be used in conjunction
+    with other modules that define the tournament structure and match data. 
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
 module Scheduler
 (
     scheduleMatches,

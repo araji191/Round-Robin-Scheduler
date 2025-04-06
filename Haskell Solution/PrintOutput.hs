@@ -1,3 +1,19 @@
+-- File: PrintOutput.hs
+
+{- |
+Module      : PrintOutput
+Description : Module for printing match schedules. 
+              
+              It provides functions to compare matches, print individual matches,
+              and print the entire schedule grouped by day and venue.
+              The comparison is based on the day, venue, and start time of the matches.
+              The schedule is printed in a formatted manner for better readability.
+              The module uses the Match and Time modules for match representation and time handling.    
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
 module PrintOutput
 (
     compareMatches,
