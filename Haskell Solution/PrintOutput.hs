@@ -14,63 +14,56 @@ Authors :     Abiola Raji, Ochihai Omuha
 
 -}
 
-module PrintOutput 
+module PrintOutput
 (
-    compareMatches, 
-    printMatch, 
+    compareMatches,
     printSchedule
 ) where
 
-import Time
 import Match
+import Time
+
 import Data.List (sortBy, groupBy)
 import Data.Function (on)
-import Text.Printf (printf)
 
+-- | Compare two matches for sorting purposes
+compareMatches :: Match -> Match -> Ordering
+compareMatches a b
+    | day a /= day b       = compare (day a) (day b)
+    | venue a /= venue b   = compare (venue a) (venue b)
+    | getHour (start a) /= getHour (start b) = compare (getHour (start a)) (getHour (start b))
+    | otherwise            = compare (getMinute (start a)) (getMinute (start b))
 
--- Comparison function using the provided accessor functions.
+-- | Format a time with leading zero if needed
+formatTime :: Int -> String
+formatTime t = if t < 10 then "0" ++ show t else show t
 
-compareMatches :: Match.Match -> Match.Match -> Ordering
-compareMatches a b =
-    compare (Match.getDay a) (Match.getDay b) <>
-    compare (Match.getVenue a) (Match.getVenue b) <>
-    compare (Time.getHour (Match.getStartTime a)) (Time.getHour (Match.getStartTime b)) <>
-    compare (Time.getMinute (Match.getStartTime a)) (Time.getMinute (Match.getStartTime b))
-
--- Print a single match with formatted times.
-
-printMatch :: Match.Match -> IO ()
-printMatch m =
-    printf " %02d:%02d-%02d:%02d: %s vs %s\n"
-        (Time.getHour (Match.getStartTime m))
-        (Time.getMinute (Match.getStartTime m))
-        (Time.getHour (Match.getEndTime m))
-        (Time.getMinute (Match.getEndTime m))
-        (Match.getParticipant1 m)
-        (Match.getParticipant2 m)
-
--- Print the schedule by grouping matches by day and then by venue.
-
-printSchedule :: [Match.Match] -> IO ()
+-- | Print the schedule in a formatted way
+printSchedule :: [Match] -> IO ()
 printSchedule matches = do
     let sortedMatches = sortBy compareMatches matches
-        days = groupBy ((==) `on` Match.getDay) sortedMatches
-    mapM_ printDayGroup days
+        groupedByDay = groupBy ((==) `on` day) sortedMatches
+    mapM_ printDay groupedByDay
   where
-    printDayGroup :: [Match.Match] -> IO ()
-    printDayGroup ms@(m:_) = do
-        putStrLn $ "\nDAY " ++ show (Match.getDay m) ++ ":"
-        let venues = groupBy ((==) `on` Match.getVenue) ms
-        mapM_ printVenueGroup venues
-    printDayGroup [] = return ()
-
- -- Print matches grouped by venue
-
-printVenueGroup :: [Match.Match] -> IO ()
-printVenueGroup ms@(m:_) = do
-    putStrLn $ "Venue " ++ show (Match.getVenue m) ++ ":"
-    mapM_ printMatch ms
-printVenueGroup [] = return ()
-
-
-
+    -- Print all matches for a day
+    printDay :: [Match] -> IO ()
+    printDay dayMatches = do
+        putStrLn ("\nDAY " ++ show (day (head dayMatches)) ++ ":")
+        let groupedByVenue = groupBy ((==) `on` venue) dayMatches
+        mapM_ printVenue groupedByVenue
+    
+    -- Print all matches for a venue
+    printVenue :: [Match] -> IO ()
+    printVenue venueMatches = do
+        putStrLn ("Venue " ++ show (venue (head venueMatches)) ++ ":")
+        mapM_ printMatch venueMatches
+    
+    printMatch :: Match -> IO ()
+    printMatch match = do
+        let startH = getHour (start match)
+            startM = getMinute (start match)
+            endH = getHour (end match)
+            endM = getMinute (end match)
+        putStrLn (" " ++ formatTime startH ++ ":" ++ formatTime startM ++ "-" ++
+                formatTime endH ++ ":" ++ formatTime endM ++ ": " ++
+                participant1 match ++ " vs " ++ participant2 match)
