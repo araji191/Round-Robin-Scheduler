@@ -1,16 +1,15 @@
 /*
- * print_output.h
+ * File name: print_output.h
  * 
- * This header file declares the function used for printing the tournament schedule.
+ * Authors: Abiola Raji, Ochihai Omuha
  * 
- * The function in this file is used to print the details of the scheduled matches, 
- * including the time, participants, venue, and day.
+ * This header file declares functions for formatting and displaying the tournament schedule.
+ * The functions handle sorting and printing match information in a user-friendly format.
  * 
- * Function:
- * - print_schedule: Prints the details of all the scheduled matches to the console, including their start time, end time, participants, and assigned venue.
- * 
+ * Functions:
+ * - print_schedule: Formats and displays the complete tournament schedule
+ * - compare_matches: Comparison function for sorting matches by day, venue, and time
  */
-
 
 #ifndef OUTPUT_H
 #define OUTPUT_H
@@ -20,19 +19,28 @@
 #include <algorithm>
 using namespace std;
 
-
-/*
- * Prints the tournament schedule to the console.
+/**
+ * @brief Prints the tournament schedule to console
+ * @param matches Array of Match objects containing scheduled matches
+ * @param total_matchups Total number of matches to display
  * 
- * This function loops through the array of scheduled matches and prints their 
- * details, including the start time, end time, participants, venue, and day.
- * It is used to display the complete schedule after all matches have been successfully 
- * assigned to their respective time slots and venues.
- * 
- * matches - An array of `Match` objects containing all scheduled matches.
- * total_matchups - The total number of matches that need to be printed.
+ * Output format:
+ * - Organized by day and venue
+ * - Each match shows time, participants, and venue
  */
-
 void print_schedule(Match matches[], int total_matchups);
+
+/**
+ * @brief Comparison function for sorting matches
+ * @param a First Match object to compare
+ * @param b Second Match object to compare
+ * @return True if a should come before b in schedule
+ * 
+ * Sort order:
+ * 1. By day (ascending)
+ * 2. By venue (ascending)
+ * 3. By start time (ascending)
+ */
+bool compare_matches(const Match &a, const Match &b);
 
 #endif

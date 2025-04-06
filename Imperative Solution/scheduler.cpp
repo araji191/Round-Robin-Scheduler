@@ -1,3 +1,19 @@
+/*
+ * File name: scheduler.cpp
+ * 
+ * Authors: Abiola Raji, Ochihai Omuha
+ * 
+ * Implementation file for the tournament scheduling algorithm.
+ * Contains the core backtracking logic for assigning matches to time slots
+ * while respecting all tournament constraints.
+ * 
+ * Functions:
+ * - schedule_matches: Initializes and controls the scheduling process
+ * - solve: Recursive backtracking implementation
+ * - is_valid: Validates match assignments against constraints
+ * - Helper functions for time calculations and conflict detection
+ */
+
 #include "scheduler.h"
 
 int backtracks = 0;
