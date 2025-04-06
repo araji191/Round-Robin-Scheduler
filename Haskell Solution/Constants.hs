@@ -1,4 +1,17 @@
-module Constants where
+--File: Constants.hs
+
+{- |
+Module      :  Constants
+Description :  Constants for the tournament scheduling system
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
+
+module Constants where 
+
+-- Constants for the tournament scheduling system
 
 maxParticipants :: Int
 maxParticipants = 100

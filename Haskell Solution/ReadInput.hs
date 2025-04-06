@@ -1,3 +1,43 @@
+-- File: ReadInput.hs
+
+{- |
+Module      :  ReadInput
+
+Description :  Read and validate tournament input data.
+               
+               This module provides functions to read tournament data from a file,
+               parse the data, and validate the tournament configuration.
+               It checks for valid tournament type, number of participants,
+               number of days, match length, number of venues, and rest period.
+               The module uses the Tournament and Time modules for tournament representation
+               and time handling.
+               
+               The input file format is expected to be:
+               - Tournament Type (integer)
+               - Participants (one per line, ending with "END")
+               - Number of Days (integer)
+               - Start Time (HH:MM)
+               - End Time (HH:MM)
+               - Match Length (integer in minutes)
+               - Number of Venues (integer)
+               - Rest Period (integer in minutes)
+               
+               The module also provides helper functions for parsing and validating the input data.
+               
+               The validation functions ensure that the input data adheres to the defined constraints
+               for the tournament configuration.
+               The module uses the Either type to handle errors gracefully,
+               returning a Left value with an error message in case of invalid input,
+               or a Right value with the validated tournament object.
+               
+               The module is designed to be used in conjunction with the Tournament and Time modules,
+               which provide the necessary data structures and functions for tournament management.
+               The input file is expected to be in a specific format, and the module provides                     
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
 module ReadInput
 (
     readInputFile,

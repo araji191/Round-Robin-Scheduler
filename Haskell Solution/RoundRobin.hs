@@ -1,3 +1,28 @@
+-- File: RoundRobin.hs
+
+{- |
+Module      :  Main 
+Description :  This module implements a round-robin tournament scheduler.
+               It reads input from a file, generates matchups, and schedules matches.
+    
+    The program expects an input file with the following format:
+    - The first line contains the number of participants.
+    - The second line contains the type of tournament (1 for single round, 2 for double round).
+    - The subsequent lines contain the names of the participants.
+    - The last line contains the start time, end time, match length, rest period, and number of venues.
+    - The program will output the schedule of matches, including the day, venue, start time, and end time for each match.
+    
+    The program uses a backtracking algorithm to find a valid schedule that meets the constraints of the tournament.
+    The program also checks for valid time parameters and ensures that the match length, rest period, and tournament time 
+    are divisible by 30 minutes.
+    The program will print an error message if the input file is not formatted correctly or if a valid schedule cannot be generated.
+    The program is designed to be run from the command line with the input file as an argument.
+
+
+Authors :     Abiola Raji, Ochihai Omuha
+
+-}
+
 module Main where
 
 import Tournament

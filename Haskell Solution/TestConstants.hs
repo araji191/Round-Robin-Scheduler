@@ -1,5 +1,7 @@
 import Constants
 
+-- Test the constants defined in Constants.hs
+
 runConstantTests :: IO ()
 runConstantTests = do
     putStrLn " "
