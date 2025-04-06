@@ -1,4 +1,4 @@
--- File: round_robin.hs
+-- File: RoundRobin.hs
 
 {- |
 Module      :  Main 
@@ -35,20 +35,17 @@ import Scheduler
 
 import System.Environment (getArgs)
 import System.IO
-import Data.List (intercalate)
-import Control.Monad (when)
 
---  Main function - entry point of the program
+-- | Main function - entry point of the program
 main :: IO ()
 main = do
     args <- getArgs
     if length args /= 1
         then do
-            progName <- getProgName
-            putStrLn $ "Please provide an input file as follows:\n\n  " ++ progName ++ " <input_file>\n"
+            putStrLn "Please provide an input file as follows:\n\n ./round_robin <input_file>\n"
             putStrLn "Note: The program will automatically look for the file in the 'testcases' directory."
         else do
-            let inputFilePath = "testcases/" ++ head args
+            let inputFilePath = "../testcases/" ++ head args
             
             -- Try to read the tournament data
             result <- readInputFile inputFilePath
@@ -74,20 +71,17 @@ main = do
                                 putStrLn "==============================="
                                 printSchedule scheduledMatches
 
--- Calculate total number of matchups
+-- | Calculate total number of matchups
 calculateTotalMatchups :: Int -> Int -> Int
 calculateTotalMatchups numParticipants tournamentType = 
     (numParticipants^2 - numParticipants) `div` 2 * tournamentType
 
--- Helper function to get tournament type (add to Tournament.hs if not present)
-
-
---  Generate all matchups based on tournament type (N rounds)
+-- | Generate all matchups based on tournament type (N rounds)
 generateMatchups :: Tournament -> [Match]
 generateMatchups tournament =
     let teams = getParticipants tournament
         numRounds = getType tournament
-    in concat $ replicate numRounds (generateSingleRound teams)
+    in concat (replicate numRounds (generateSingleRound teams))
   where
     generateSingleRound :: [String] -> [Match]
     generateSingleRound teams =
@@ -96,8 +90,3 @@ generateMatchups tournament =
         , (j, t2) <- zip [0..] teams 
         , i < j
         ]
-
-
--- Get the program name from args (simplified version)
-getProgName :: IO String
-getProgName = return "tournament_scheduler"
